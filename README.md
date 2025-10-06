@@ -1,5 +1,15 @@
 # LearnCpp.com — Modern C++ Guide (Chapters & Sections)
 
+## Important Questions
+- Why another C++ tutorial?
+  - Why not, moreover I am jobless and I need to do some shit.
+- Did you use Chat-GPT for this?
+  - Ofc, let's be honest, but mostly to generate the overall structure and to refine READMEs, since I am italian as you might know my english is terrible.
+- ETA ?
+  - No fukin idea, depending on how lazy I am
+- Why to learn C++?
+  - Because I saw that in most of job postings, C++ is HIGHLY appreciated, and moreover I wanted to learn CUDA C++, and how could I learn CUDA C++ without knowing C++ first?
+
 ## About
 This is my **from‑scratch to good-enough** (you will tell me if it is actually good enough, not sure it worked for me) C++ path, built while following the excellent free tutorial at **[LearnCpp.com](https://www.learncpp.com/)**.  
 The repo mirrors LearnCpp’s, but adds a clean, runnable code path:
