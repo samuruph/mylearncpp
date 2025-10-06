@@ -1,8 +1,8 @@
 # LearnCpp.com — Modern C++ Guide (Chapters & Sections)
 
 ## About
-This is my **from‑scratch to productive** C++ path, built while following the excellent free tutorial at **[LearnCpp.com](https://www.learncpp.com/)**.  
-The repo mirrors LearnCpp’s spirit and cadence, but adds a clean, runnable code path:
+This is my **from‑scratch to good-enough** (you will tell me if it is actually good enough, not sure it worked for me) C++ path, built while following the excellent free tutorial at **[LearnCpp.com](https://www.learncpp.com/)**.  
+The repo mirrors LearnCpp’s, but adds a clean, runnable code path:
 
 - **One chapter README per topic**: crisp theory summary, gotchas, and direct pointers to relevant LearnCpp lessons.
 - **`sections/` folder per chapter** with small, runnable programs you can build and step through.
@@ -98,7 +98,7 @@ Each chapter folder contains:
 
 | Chapter | Target(s) | TL;DR |
 |---|---|---|
-| **C00 — Getting Started** | `ch00_hello` | Install toolchain, build a hello world, step once in debugger. LearnCpp’s intro explains the approach and who it’s for. |
+| **C00 — Getting Started** | `ch00_hello` | Install toolchain, build a hello world, debugger set default C++ language on vscode. LearnCpp’s intro explains the approach and who it’s for. |
 | **C01 — Program Structure** | `ch01_first` | Statements, expressions, blocks, and `main()`. Write your first interactive program; chapter summary has a self‑quiz. |
 | **C02 — Functions** | `ch02_funcs` | Why functions; decl/defn split; headers; pass small by value, big by `const&`, sinks by value/forwarding; chapter quiz available. |
 | **C03 — I/O & `<format>`** | `ch03_io` | `cin/cout/cerr` basics; prefer C++20 `<format>` for type‑safe formatting (fallback to iostream manipulators if not available). |
