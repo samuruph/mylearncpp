@@ -18,7 +18,7 @@ By the end, the compiler and debugger will feel familiar.
 
 ## 📂 Sections
 
-### S07 — Compiling and Running Your First Program
+### S07 — 0.7 Compiling your first program
 Your first milestone: create a one-file program that prints a message, build it with strict flags, and step through it in the debugger.
 
 #### ✏️ Create `main.cpp`
@@ -48,7 +48,7 @@ Start debugging (▶️ in the Debug panel), step through `main()`, and watch lo
 
 ---
 
-### S12 — Configuring Your Compiler: Choosing a Language Standard
+### S12 — 0.12 Configuring your compiler: Choosing a language standard
 You’ll experiment with **C++11**, **C++14**, **C++17**, and **C++20** to see how newer features appear.
 
 #### 🧭 Option 1 — UI Method
@@ -156,7 +156,7 @@ If you get **errors**, you’re using a pre-C++17 mode.
 
 ---
 
-### S13 — Detecting Your Compiler’s Active Standard
+### S13 — 0.13 What language standard is my compiler using?
 Create `main.cpp`:
 
 ```cpp
