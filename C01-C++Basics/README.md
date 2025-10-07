@@ -742,27 +742,149 @@ int total = 1 + 2 + 3 + 4; // total is 10
 ### S10 - 1.10 Introduction to expressions
 
 #### Expressions:
-An **expression** is a combination of literals, variables, and operators that produces a value.
+An **expression** is a non-empty sequence of literals, variables, operators, and function calls that the compiler evaluates to produce a value.
+All of these lines are expressions that evaluate to a value:
+```cpp
+// five() is a function that returns the value 5
+int five()
+{
+    return 5;
+}
+
+int main()
+{
+    int a{ 2 };             // initialize variable a with literal value 2
+    int b{ 2 + 3 };         // initialize variable b with computed value 5
+    int c{ (2 * 3) + 4 };   // initialize variable c with computed value 10
+    int d{ b };             // initialize variable d with variable value 5
+    int e{ five() };        // initialize variable e with function return value 5
+
+    return 0;
+}
+```
+
+- The process of executing an expression is called **evaluation**, and the resulting value is the **result** of the expression (this can be a value, an object or a function, or nothing).
+
+- Expressions do not end in a semicolon `;` (statements do), and cannot be compiled on their own. Usually they are part of a statement.
+  ```cpp
+  int x{ 2 + 3 }; // 2 + 3 is an expression that has no semicolon -- the semicolon is at the end of the statement containing the expression
+  ```
+
+#### Expresssion statements:
+An **expression statement** is an expression followed by a semicolon `;`. It is a valid statement that can be compiled and executed.
+```cpp
+int x{ 2 + 3 }; // expression statement
+x = x + 1;      // expression statement
+std::cout << x; // expression statement
+```
+
+#### Useless expressions:
+Some expressions do not have any effect (no side effects) and their result is not used.
+```cpp
+5 + 3; // useless expression: computes 8 but does nothing with it
+```
+
+#### Sub-expressions, full expressions, and compund expressions:
+- A **sub-expression** is an expression used as an operand of another expression.
+  ```cpp
+  (2 * 3) + 4; // (2 * 3) and 4 are a sub-expressions of the full expression (2 * 3) + 4
+  ```
+- A **full expression** is an expression that is not a sub-expression of another expression.
+  ```cpp
+  2               // 2 is a literal that evaluates to value 2
+  2 + 3           // 2 + 3 uses operator+ to evaluate to value 5
+  x = 4 + 5       // 4 + 5 evaluates to value 9, which is then assigned to variable x
+  ```
+- A **compound expression** is an expression that contains two or more uses of operators.
+  ```cpp
+  2 + 3 * 4       // compound expression with two operators: + and *
+  (2 + 3) * 4     // compound expression with two operators: + and *
+  ```
+
+#### Best practices / Summary:
+- Understand what expressions are and how they are evaluated.
+- Use expressions within statements to perform computations and operations.
+- Avoid useless expressions that do not have any effect.
+
+
+---
+
+### S11 - 1.11 Developing your first program
+The exercise is to create a simple interactive program that asks a user for an integer, doubles it, and prints the result.
+Here is a complete example:
+```cpp
+// clang++ -std=gnu++14 -fcolor-diagnostics -fansi-escape-codes -g C01-C++Basics/sections/s11-first-program/main.cpp -o C01-C++Basics/sections/s11-first-program/main
+#include <iostream>
+
+int main()
+{      
+    // Ask to enter an integer
+    std::cout << "Enter an integer: ";
+
+    // Define the integer variable x
+    int x {};
+
+    // Input the integer number from user
+    std::cin >> x;
+
+    // Print the doubled number using an expression
+    std::cout << "Double that number is: " << (x * 2) << "\n";
+    return 0;
+}
+```
+
+Compile it and run it! Enjoy!
+
+
+---
+
+### SX - 1.x Chapter 1 Summary & Quiz
+Here the solution of the proposed exercise (get two inputs, and print their sum and difference):
+```cpp
+// /usr/bin/clang++ -std=gnu++14 -fcolor-diagnostics -fansi-escape-codes -g C01-C++Basics/sections/sx-summary-quiz/main.cpp -o C01-C++Basics/sections/sx-summary-quiz/main
+#include <iostream>
+
+int main() 
+{
+    int a {};
+    int b {};
+
+    std::cout << "Enter an integer: ";
+    std::cin >> a;
+
+    std::cout << "Enter another integer: ";
+    std::cin >> b;
+
+    std::cout << a << " + " << b << " is " << (a + b) << ".\n";
+    std::cout << a << " - " << b << " is " << (a - b) << ".\n";
+}
+```
+
+---
+
+## 🧭 Summary
+In this chapter, we covered the basics of C++ programming, including:
+
+- The structure of a C++ program
+- Comments and their usage
+- Data types and variables
+- Input and output using `iostream`
+- Basic arithmetic operations
+- Writing and using functions
+- Best practices for writing clean and maintainable code
 
 
 
 
 
 
-
-
-
-
-
+TODO: check this in all readmes
 **Build / Run**
 ```bash
 cmake --build build --target ch01_first
 ./build/ch01_first
 ```
 
-**Exercises**
-- Add validation for non-integer input.
-- Log invalid input using `std::cerr`.
 
 ---
 
@@ -771,19 +893,4 @@ cmake --build build --target ch01_first
 - Don’t use `using namespace std;` in headers.  
 - Define variables before using them; initialize upon creation.  
 - Avoid narrowing with list-initialization; use `[[maybe_unused]]` only when justified.
-
----
-
-### LearnCpp References
-- 1.1 — Statements and the structure of a program  
-  https://www.learncpp.com/cpp-tutorial/statements-and-the-structure-of-a-program/
-- 1.2 — Comments  
-  https://www.learncpp.com/cpp-tutorial/comments/
-- 1.3 — Introduction to objects and variables  
-  https://www.learncpp.com/cpp-tutorial/introduction-to-objects-and-variables/
-- 1.4 — Variable assignment and initialization  
-  https://www.learncpp.com/cpp-tutorial/variable-assignment-and-initialization/
-- 1.5 — Introduction to iostream: cout, cin, and endl  
-  https://www.learncpp.com/cpp-tutorial/introduction-to-iostream-cout-cin-and-endl/
-- 1.x — Chapter summary & quiz  
-  https://www.learncpp.com/cpp-tutorial/chapter-summary-and-quiz/
+- Prefer `'\n'` over `std::endl` for newlines unless flushing is needed.
