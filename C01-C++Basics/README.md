@@ -13,6 +13,7 @@ cmake --build build --target ch01_first
 ./build/ch01_first
 ```
 
+---
 
 ## 🎯 Learning Outcomes
 
@@ -416,26 +417,6 @@ int main()
 - Use `std::cout` with `<<` to print.
 - Use `std::cin` with `>>` to read input.
 - Prefer `'\n'` for newlines; use `std::endl` only when flushing is needed.
-
----
-
-### S06 — 1.6 First Interactive Program
-
-Prompt for an integer, compute a result, print it.
-
-```cpp
-#include <iostream>
-
-int main()
-{
-    int num{};
-    std::cout << "Enter a number: ";
-    std::cin >> num;
-    std::cout << "You entered: " << num << '\n';
-    return 0;
-}
-```
-
 
 ---
 
