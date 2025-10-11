@@ -1,7 +1,10 @@
 # Chapter 02 — C++ Basics: Functions and Files
 
 ## Overview
-TODO: write overview
+This chapter takes you from “I can write `main()`” to “I can **design and structure programs** with clear, reusable functions.”  
+You’ll learn how to declare, define, and call functions; return values vs `void`; pass data via parameters; manage **local scope & lifetime**; and organize multi-file projects with **headers**, **forward declarations**, and **include guards**.  
+By the end, you’ll be comfortable splitting logic into small units, compiling multiple translation units, and avoiding naming collisions with **namespaces** and proper header hygiene.
+
 
 ---
 
@@ -13,13 +16,24 @@ cmake --build build --target ch02_first
 ./build/ch02_first
 ```
 
+
 ---
 
 ## 🎯 Learning Outcomes
+By the end of this chapter, you will be able to:
 
-By the end of this chapter, you’ll be able to:
+- ⚙️ **Explain** the difference between function **declaration**, **definition**, and **call**.  
+- ✨ **Write** both value-returning and `void` functions, using `return` correctly and safely.  
+- 🎯 **Use** parameters and arguments effectively — including nested calls and evaluation order.  
+- 📦 **Apply** local **scope** and **lifetime** rules; understand when temporaries are created and destroyed.  
+- 🧩 **Organize** code across multiple files and understand how separate **translation units** are compiled and linked.  
+- 📄 **Create** and use **header files** with proper guards (`#ifndef` / `#define` / `#endif` or `#pragma once`).  
+- 🚫 **Avoid** One Definition Rule (ODR) violations by keeping one definition and multiple consistent declarations.  
+- 🧭 **Prevent** naming collisions using **namespaces** and disciplined include practices.  
+- ⚡ **Leverage** the **preprocessor** (`#include`, `#define`, and conditionals) responsibly to manage builds.  
+- 🧠 **Adopt** clean design habits — small, focused functions with clear purpose and reusable interfaces.
 
-- TODO: write outcomes
+
 
 ---
 
@@ -1340,16 +1354,26 @@ Once you have implemented all the functions and integrated them into your main p
 ---
 
 ### SX - 2.x Chapter 2 Summary & Quiz
+Have a look at the solutions inside the `sx-questions` folder, and have fun!
 
 
-
-
-
-
+---
 
 ## 🧭 Summary
+Functions are the building blocks for clean C++ programs. You learned how to **declare**, **define**, and **call** them; how to **return values** (or use `void`); and how to pass information through **parameters/arguments**. You explored **local scope** and **lifetime** (including temporaries), and saw how functions enable modular, testable code.
 
-TODO: write summary
+On the project side, you learned to **split code into multiple files**, compile separate **translation units**, and connect them during **linking**. You now know how to create **header files** to propagate declarations, protect them with **include guards** (or `#pragma once`), and avoid **ODR** pitfalls by keeping definitions in `.cpp` files. Finally, you touched the **preprocessor** and **namespaces** to manage includes and prevent name clashes.
 
-### 🧱 Core Concepts You Mastered:
-- TODO: list concepts
+**Key takeaways:** keep functions small and focused, expose clear interfaces via headers, include only what you need, and let namespaces and guards keep your codebase tidy and scalable.
+
+### 🧱 Core Concepts You Mastered
+- ⚙️ **Functions 101** — Difference between declaration, definition, and call; when to use `void` vs value-returning functions.  
+- 🔁 **Return & Flow** — Using `return` correctly; understanding what happens when it’s missing.  
+- 🎯 **Parameters & Arguments** — Passing and using values effectively in functions; nested and chained calls.  
+- 📦 **Scope & Lifetime** — Local variables exist only inside their function; temporaries vanish after use.  
+- 🧩 **Multi-File Projects** — Splitting code into multiple `.cpp` files and linking them together.  
+- 📄 **Headers & Guards** — Sharing declarations via `.h` files, protecting them with include guards or `#pragma once`.  
+- 🚫 **ODR & Duplicates** — Avoid multiple definitions across files; keep one definition, many declarations.  
+- ⚡ **Preprocessor Basics** — How `#include`, `#define`, and conditional compilation work before actual compilation.  
+- 🧭 **Namespaces** — Organizing code and avoiding naming collisions (e.g., `std::cout`).  
+- 🧠 **Good Design Habits** — Write small, focused, reusable functions and include only what you need.
