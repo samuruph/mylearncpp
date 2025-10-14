@@ -1353,7 +1353,7 @@ Once you have implemented all the functions and integrated them into your main p
 
 ---
 
-### SX - 2.x Chapter 2 Summary & Quiz
+### SX - 2.x Chapter 2 summary and quiz
 Have a look at the solutions inside the `sx-questions` folder, and have fun!
 
 

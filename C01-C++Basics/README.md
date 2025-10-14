@@ -824,7 +824,7 @@ Compile it and run it! Enjoy!
 
 ---
 
-### SX - 1.x Chapter 1 Summary & Quiz
+### SX - 1.x Chapter 1 summary and quiz
 Here the solution of the proposed exercise (get two inputs, and print their sum and difference):
 ```cpp
 // /usr/bin/clang++ -std=gnu++14 -fcolor-diagnostics -fansi-escape-codes -g C01-C++Basics/sections/sx-summary-quiz/main.cpp -o C01-C++Basics/sections/sx-summary-quiz/main
