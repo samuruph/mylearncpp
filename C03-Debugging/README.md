@@ -1,7 +1,10 @@
 # Chapter 03 — Debugging C++ Programs
 
 ## Overview
-In this chapter, you will learn how to identify and fix common errors in C++ programs. You will explore various types of errors, including syntax errors, semantic errors, and runtime errors. Additionally, you will be introduced to debugging tools and techniques that can help you diagnose and resolve issues in your code effectively.
+In this chapter, you’ll learn how to **find, analyze, and fix errors** in your C++ programs using a structured and methodical approach.  
+We’ll explore the main **types of errors** — syntax, semantic, and runtime — and how to address them effectively. You’ll also discover **core debugging techniques** such as code inspection, adding temporary print statements, using **conditional compilation**, and employing **logging libraries**.  
+
+Finally, you’ll gain hands-on experience with **integrated debuggers** (like VS Code’s), learning how to **set breakpoints**, **step through code**, **inspect variables**, and **analyze the call stack** to pinpoint issues. The chapter concludes with best practices for **defensive programming**, **testing**, and **error prevention** — essential habits for writing robust, maintainable code.
 
 ---
 
@@ -17,9 +20,17 @@ cmake --build build --target ch03_first
 
 ## 🎯 Learning Outcomes
 
-By the end of this chapter, you’ll be able to:
-
-- TODO: write outcomes
+By the end of this chapter, you will be able to:
+- 🧩 Identify and distinguish between syntax, semantic, and runtime errors.
+- 🧠 Apply a systematic debugging process — from finding the cause to verifying the fix.
+- 🧾 Use debugging tactics such as commenting out code, printing values, and validating code flow.
+- ⚙️ Leverage preprocessor directives (#ifdef, #define) to enable or disable debugging output.
+- 🪵 Implement logging using libraries like plog for cleaner, configurable debugging.
+- 🧭 Operate an integrated debugger: run to cursor, set breakpoints, step into/over/out, and inspect variables.
+- 🧱 Interpret the call stack to trace program execution and locate logical - errors.
+- 🧰 Apply defensive programming techniques to prevent errors before they - occur.
+- 🧪 Design and run simple tests (unit and integration) to verify correctness - and prevent regressions.
+- 🚀 Adopt coding habits that minimize bugs — small, focused functions, readability, and consistent refactoring.
 
 ---
 
@@ -452,33 +463,243 @@ plog::init(plog::none , "Logfile.txt"); // plog::none eliminates writing of most
 
 ---
 
-### S06 — 3.6 Using and integrated debugger. Stepping
+### S06 — 3.6 Using and integrated debugger: Stepping
 In this section, we will explore how to use an integrated debugger to step through your code and identify issues.
 
 #### The debugger:
 A **debugger** is a computer program that allows the programmer to control how another program executes and examine the **program state** (variables, memory, etc.) while that program is running. The debugger allows the user to precisely control the exectution of the program, including pausing execution, stepping through code line by line, and inspecting (and modifying) variables and memory.
 
-Later debuggers, are now integrated into IDEs, such as Visual Studio, CLion, and Eclipse. These **integrated debuggers** provide a graphical interface that makes it easier to use the debugger's features.
+Later debuggers, are now integrated into IDEs, such as Visual Studio, CLion, and Eclipse. These **integrated debuggers** provide a graphical interface that makes it easier to use the debugger's features. To use the integrated debugger in VSCode, you need to run the program clicking on the triangle on the top right corner, and selecting "Debug C/C++ File". 
+
+You can set **breakpoints** in your code by clicking in the gutter next to the line numbers. A breakpoint is a marker that tells the debugger to pause execution when it reaches that line of code. Once the program is paused at a breakpoint, you can inspect the program state, including variable values and memory contents.
 
 #### Stepping:
 Stepping is the process of executing a program one line at a time, allowing the programmer to closely observe the program's behavior and state at each step. This can be useful for identifying issues in the code, as well as for understanding how the code works. There are several types of stepping:
-- **Step into**: This command allows you to step into a function call, allowing you to see the code inside the function and how it is executed.
--
+- **Step into**: This command executes the next statement in the normal execution path of the program, and then it pauses execution again. If the next statement is a function call, the debugger will enter that function and pause at the first line of code inside the function.
+- **Step over**: This command executes the next statement in the normal execution path of the program, but if the next statement is a function call, the debugger will execute the entire function and pause at the next line of code after the function call.
+- **Step out**: This command continues execution until the current function returns, and then it pauses execution at the line of code that called the function.
+- **Step back**: Some debuggers support stepping backwards, allowing the programmer to reverse the execution of the program one step at a time. This can be useful for understanding how the program reached its current state. However, not all debuggers support this feature (e.g., current VSCode C++ debugger does not).
+
+#### Summary:
+- A debugger is a tool that allows you to control the execution of a program and inspect its state.
+- Integrated debuggers provide a graphical interface for using debugger features.
+- Stepping allows you to execute a program one line at a time, helping you identify issues and understand how the code works.
 
 
+---
+
+### S07 — 3.7 Using an integrated debugger: Running and breakpoints
+In this section, we will explore how to use an integrated debugger to run your code and set breakpoints.
+
+#### Run to cursor:
+The **Run to cursor** feature allows you to quickly execute your program up to a specific line of code. This can be useful for quickly reaching a specific point in your code without having to set a breakpoint. To use this feature, simply right-click on the line of code where you want to pause execution and select "Run to cursor" from the context menu. The debugger will then execute the program up to that line and pause execution.
+
+#### Continue:
+The **Continue** command resumes the execution of the program until the next breakpoint is reached or the program finishes executing. This can be useful for quickly running through sections of code that you are not interested in debugging. To use this command, simply click the "Continue" button in the debugger toolbar.
+
+#### Breakpoints:
+Breakpoints are markers that tell the debugger to pause execution when it reaches a specific line of code. You can set breakpoints by clicking in the gutter next to the line numbers in your code editor. Once a breakpoint is set, the debugger will pause execution at that line, allowing you to inspect the program state and variables.
+
+You can manage breakpoints using the Breakpoints panel in the debugger sidebar. This panel allows you to enable, disable, or remove breakpoints, as well as view all the breakpoints that are currently set in your code.
+
+#### Summary:
+- The "Run to cursor" feature allows you to quickly execute your program up to a specific line of code.
+- The "Continue" command resumes program execution until the next breakpoint or the end of the program.
+- Breakpoints allow you to pause execution at specific lines of code for inspection and debugging.
 
 
+---
+
+### S08 — 3.8 Using an integrated debugger: Watching variables
+In this section, we will explore how to use an integrated debugger to watch variables and monitor their values during program execution.
+
+#### Watching variables:
+Watching variables allows you to monitor the values of specific variables as your program executes. This can be useful for identifying issues in your code, as well as for understanding how the code works. To quickly watch variables you can go over the specific variable in your code and hover the mouse over it. A tooltip will appear showing the current value of the variable. This of course works well for a quick inspection, but if you want to keep track of a variable over time, you can add it to the watch list.
 
 
+#### The watch window (VSCode):
+To watch variables in VSCode, you can use the **"Run and Debug"** (play icon with a bug) sidebar. In the "Variables" section, you can see the local variables in the current scope, as well as any global variables. You can also add specific variables to the "Watch" section by clicking the "+" button and entering the variable name. This will allow you to monitor the value of that variable as you step through your code. In the "Call Stack" section, you can see the current function call stack, which can help you understand how your program reached its current state. In the "Breakpoints" section, you can manage your breakpoints, including enabling, disabling, or removing them.
+
+#### Debug console (VSCode):
+The **Debug Console** in VSCode (close to the terminal tab) allows you to evaluate expressions and execute commands while your program is paused in the debugger. You can use the Debug Console to inspect variable values, call functions, and execute arbitrary code. This can be useful for quickly testing hypotheses about your code and understanding how it works.
+
+#### Summary:
+- Watching variables allows you to monitor their values during program execution.
+- The "Run and Debug" sidebar in VSCode provides a convenient way to view and manage variables, call stacks, and breakpoints.
+- The Debug Console in VSCode allows you to evaluate expressions and execute commands while your program is paused in the debugger.
 
 
+---
+
+### S09 — 3.9 Using an integrated debugger: The call stack
+The **call stack** is a list of all the active functions that have been called to get at the current point of execution in a program. Each time a function is called, a new entry is added to the top of the call stack. When a function returns, its entry is removed from the top of the stack. The call stack provides a way to trace the sequence of function calls that led to the current point of execution.
+
+#### The call stack window (VSCode):
+In VSCode, the call stack can be viewed in the "Call Stack" section of the "Run and Debug" sidebar. This section displays the current function call stack, with the most recent function call at the top. You can click on any entry in the call stack to navigate to the corresponding line of code in the editor. This can be useful for understanding how your program reached its current state and for identifying issues in your code.
+
+For example, consider the following code:
+```cpp
+#include <iostream>
+
+void a()
+{
+	std::cout << "a() called\n";
+}
+
+void b()
+{
+	std::cout << "b() called\n";
+	a();
+}
+
+int main()
+{
+	a();
+	b();
+
+	return 0;
+}
+```
+If you set a breakpoint in the `a` function at line 5 and run the debugger, the call stack will show the sequence of function calls that led to the current point of execution. When the breakpoint is hit, the call stack will look like this:
+```
+  a()  (line 5)
+  main()  (line 18)
+```
+This indicates that the `a` function was called from the `main` function at line 18. If you continue execution and hit the breakpoint again when `a` is called from `b`, the call stack will look like this:
+```
+  a()  (line 5)
+  b()  (line 12)
+  main()  (line 19)
+```
+This indicates that the `a` function was called from the `b` function at line 12, which was in turn called from the `main` function at line 19.
+
+#### Summary:
+- The call stack is a list of active function calls that led to the current point of execution.
+- The call stack can be viewed in the "Call Stack" section of the "Run and Debug" sidebar in VSCode.
+- The call stack can help you understand how your program reached its current state and identify issues in your code.
 
 
+---
 
+### S10 — 3.10 Finding issues before they become problems
+In this section, we will explore some techniques for finding issues in your code before they become problems.
+
+#### Don't make errors:
+The best way to avoid bugs is to not introduce them in the first place. here is a list of some techniques that can help you avoid introducing bugs in your code:
+- Follow best practices and coding standards.
+-  Do not porgram when tired or distracted.
+- Understand where common pitfalls are for a programming language.
+- Keep your functions small and focused.
+- Use standard libraries and frameworks.
+- Comment your code.
+- Start with simple code and gradually add complexity.
+- Avoid clever/non-obvious code.
+- Optimize for readability and maintainability.
+- Use version control to track changes and revert to previous versions if necessary.
+- Review your code regularly and refactor when necessary.
+- Take breaks and step away from the code to gain a fresh perspective.
+
+#### Refactoring your code:
+Refactoring is the process of restructuring existing code without changing its external behavior. The goal of refactoring is to improve the code's readability, maintainability, and performance. Refactoring can help you identify and fix issues in your code before they become problems. Some common refactoring techniques include:
+- Renaming variables and functions to improve clarity.
+- Extracting functions to reduce code duplication and improve modularity.
+- Simplifying complex logic to improve readability.
+- Removing unused code to reduce clutter.
+- Improving code structure to enhance maintainability.
+- Improving performance by optimizing algorithms and data structures.
+- Adding comments and documentation to improve understanding.
+
+#### An introduction to defensive programming:
+Defensive programming is a programming approach that emphasizes writing code that is robust and resilient to errors and unexpected inputs. The goal of defensive programming is to anticipate and handle potential issues before they become problems. Some common defensive programming techniques include:
+- Input validation: Check that input values are within expected ranges and formats.
+- Error handling: Use try-catch blocks to handle exceptions and errors gracefully.
+- Assertions: Use assertions to check for conditions that should always be true.
+- Logging: Use logging to track program execution and identify issues.
+- Code reviews: Have other developers review your code to identify potential issues.
+- Testing: Write unit tests and integration tests to verify that your code works as expected.
+
+#### An introduction to testing functions:
+Testing is the process of verifying that your code works as expected. Testing can help you identify and fix issues in your code before they become problems. Some common testing techniques include:
+- **Unit testing**: Test individual functions and components in isolation.
+- **Integration testing**: Test how different components work together.
+- **System testing**: Test the entire system to ensure it meets requirements.
+- **Regression testing**: Test that changes to the code do not introduce new issues.
+- **Automated testing**: Use tools to automate the testing process and run tests frequently.
+- **Test-driven development (TDD)**: Write tests before writing code to ensure that the code meets requirements.
+
+Here a simple example of Unit testing:
+```cpp
+#include <iostream>
+
+int add(int x, int y)
+{
+	return x + y;
+}
+
+void testadd()
+{
+	std::cout << "This function should print: 2 0 0 -2\n";
+	std::cout << add(1, 1) << ' ';
+	std::cout << add(-1, 1) << ' ';
+	std::cout << add(1, -1) << ' ';
+	std::cout << add(-1, -1) << ' ';
+}
+
+int main()
+{
+	testadd();
+
+	return 0;
+}
+```
+This code defines a simple `add` function and a `testadd` function that tests the `add` function with a few different inputs. When you run the program, it will print the expected output, allowing you to verify that the `add` function works as intended.
+
+#### An introduction to constraints:
+Constraints are rules or conditions that must be met in order for a program to function correctly. Constraints can help you identify and fix issues in your code before they become problems. Some common types of constraints include:
+- **Type constraints**: Ensure that variables and functions are used with the correct types.
+- **Value constraints**: Ensure that variables and functions are used with valid values.
+- **State constraints**: Ensure that the program is in a valid state before performing certain operations.
+- **Performance constraints**: Ensure that the program meets performance requirements.
+- **Security constraints**: Ensure that the program is secure and does not expose vulnerabilities.
+
+#### Shotgunning for general issues:
+Programmers tend to make certain kinds of common mistakes, and some of those mistakes can be discovered by programs trained to look for them. These programs, generally known as **static analysis tools**, can analyze your code without executing it and identify potential issues.
+
+#### Summary:
+- Avoid introducing bugs by following best practices and coding standards.
+- Refactor your code to improve readability, maintainability, and performance.
+- Use defensive programming techniques to anticipate and handle potential issues.
+- Test your code to verify that it works as expected.
+- Use constraints to ensure that your program meets requirements.
+
+
+---
+
+### SX - 3.x Chapter 3 summary and quiz
+Unfortunately, no `sx-questions` folder for this chapter, you can try to debug a previous program you wrote. 
+
+Have fun :)
+
+
+--- 
 
 ## 🧭 Summary
 
-TODO: write summary
+Debugging is not just about fixing mistakes — it’s about **understanding program behavior**.  
+Throughout this chapter, you learned how to **analyze errors**, **trace logic**, and **use debugging tools** to systematically locate problems. You practiced several debugging tactics (like commenting out code, using print statements, or logging), and learned how to make them more manageable through **conditional compilation** and **logging frameworks**.
 
-### 🧱 Core Concepts You Mastered:
-- TODO: list concepts
+You also explored how to use an **integrated debugger** in VS Code to step through execution, inspect variables, and study the **call stack**, giving you deeper insight into how your code actually runs.  
+The chapter concluded with **preventive strategies**: defensive programming, testing, and refactoring — the tools of a disciplined, confident C++ developer.
+
+### 🧱 Core Concepts You Mastered
+- ⚙️ Error Types — Syntax, semantic, and runtime errors, and how to detect them.
+- 🔍 Debugging Process — Step-by-step approach to isolate, understand, and fix bugs.
+- 🧩 Debugging Techniques — Code inspection, print debugging, conditional compilation, and logging.
+- 🐞 Integrated Debugger — Using breakpoints, stepping, and watching variables effectively.
+- 🧠 Call Stack Analysis — Understanding how execution flows through nested function calls.
+- 🧰 Defensive Programming — Writing robust code that anticipates and handles unexpected behavior.
+- 🧪 Testing & Validation — Using unit tests and assertions to ensure correctness.
+- 🚧 Prevention Mindset — Avoiding bugs through best practices, code reviews, and refactoring discipline.
+
+✨ **Key takeaway:** Debugging is both a skill and a mindset.  
+The best programmers don’t write bug-free code — they write code that’s **easy to debug**, **test**, and **trust**.
