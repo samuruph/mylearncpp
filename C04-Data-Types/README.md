@@ -1,7 +1,18 @@
 # Chapter 04 — Fundamental Data Types
 
 ## Overview
-In this chapter, TODO ...
+In this chapter, you’ll dive deep into the **fundamental data types** that form the backbone of every C++ program.  
+Before we can build complex data structures or algorithms, we must understand how data is represented and manipulated at the most basic level — as **bits, bytes, and memory**.
+
+You’ll learn:
+- how C++ represents different **kinds of data** (numbers, characters, booleans, etc.),
+- how **memory and data size** influence performance and precision,
+- the difference between **signed and unsigned integers**, and why the latter can be dangerous,
+- what **floating-point numbers** are and why they can’t always represent decimals exactly,
+- and how to safely **convert between types** using `static_cast`.
+
+By the end of this chapter, you’ll have a solid understanding of how computers store, interpret, and operate on data — the essential foundation for mastering control flow, arithmetic, and object-oriented programming later on.
+
 
 ---
 
@@ -13,13 +24,24 @@ cmake --build build --target ch04_first
 ./build/ch04_first
 ```
 
+
 ---
 
 ## 🎯 Learning Outcomes
 
-By the end of this chapter, you’ll be able to:
+By completing this chapter, you’ll be able to:
 
-- TODO: write outcomes
+- 🧠 **Understand how data is stored** in memory as bits and bytes, and what “data type” really means.  
+- 🔢 **Identify and use fundamental C++ types**, such as `int`, `float`, `double`, `char`, `bool`, and `void`.  
+- 📏 **Use `sizeof`** to inspect object and type sizes, and explain how architecture affects data representation.  
+- ⚖️ **Differentiate between signed and unsigned integers**, and understand why signed arithmetic is safer.  
+- 🧱 **Apply fixed-width integer types** (`std::int32_t`, `std::uint64_t`, etc.) for precise and portable code.  
+- 🧮 **Represent and read numbers in scientific notation** for large or small magnitudes.  
+- 🌊 **Work confidently with floating-point types**, understanding rounding errors, precision, and `NaN`/`Inf`.  
+- 🚦 **Use booleans and if-statements** to control program flow with clear logical expressions.  
+- 🔤 **Manipulate character data** using `char`, ASCII codes, and escape sequences.  
+- 🧩 **Perform safe type conversions** using `static_cast` to prevent implicit data loss or confusion.
+
 
 ---
 
@@ -1526,17 +1548,41 @@ will output:
 -1
 ```
 
+#### Summary:
+- Type conversion is the process of converting a value from one data type to another, which can occur implicitly or explicitly.
+- Implicit type conversion occurs automatically when a value of one data type is assigned to a variable of another data type or when an expression involves mixed data types.
+- Implicit type conversions can lead to unexpected results or loss of information, especially when converting from floating-point types to integer types.
+- Explicit type conversion, or type casting, is performed manually using the `static_cast` operator.
+- The `static_cast` operator allows you to convert values between different data types, including converting `char` to `int` and between signed and unsigned integer types.
 
 
+---
+
+### SX — 4.x summary and quiz:
+Have. a look at the exercises for this chapter in the course book. Then, you will find solutions inside the `exercises/sx-questions` folder.
+
+Enjoy! :)
 
 
+---
 
+In this chapter, you explored how C++ represents **data at the fundamental level** and how different types define both the **interpretation and precision** of values stored in memory. You learned that everything is ultimately represented as bits and bytes, and that **data types** tell the compiler how to interpret these values. The chapter covered how **fundamental types** like `int`, `float`, `double`, `char`, `bool`, and `void` form the foundation of every program, and how **object sizes** may vary depending on architecture.  
 
+You discovered the key differences between **signed and unsigned integers**, the importance of **fixed-width types** for cross-platform consistency, and how `std::size_t` is used for sizes and indexing. You also explored how **floating-point numbers** can introduce rounding errors due to binary representation, and how **booleans** and **if-statements** enable logical control flow.  
 
+Finally, you learned how **characters** are tied to numeric representations through ASCII codes, and how **explicit type conversions** using `static_cast` allow for safe and predictable data transformations.
 
-## 🧭 Summary
+---
 
-TODO: write summary
+### 🧱 Core Concepts You Mastered
 
-### 🧱 Core Concepts You Mastered:
-- TODO: list concepts
+- 🧠 Understanding of **memory representation** (bits, bytes, addresses)  
+- 🔢 Mastery of **fundamental and integral data types**  
+- 📏 Knowledge of **object size and `sizeof`**  
+- ⚖️ Difference between **signed vs unsigned** and their pitfalls  
+- 🧱 Usage of **fixed-width and portable integer types**  
+- 🌊 Handling **floating-point precision and rounding errors**  
+- 🧮 Familiarity with **scientific notation**  
+- 🚦 Control flow with **booleans and `if` statements**  
+- 🔤 Manipulation of **characters, ASCII, and escape sequences**  
+- 🧩 Safe **explicit type casting** using `static_cast`
