@@ -1559,7 +1559,7 @@ will output:
 ---
 
 ### SX — 4.x summary and quiz:
-Have. a look at the exercises for this chapter in the course book. Then, you will find solutions inside the `exercises/sx-questions` folder.
+Have a look at the exercises for this chapter in the course. Then, you will find solutions inside the `exercises/sx-questions` folder.
 
 Enjoy! :)
 
