@@ -1,7 +1,8 @@
 # Chapter 05 — Constants and Strings
 
 ## Overview
-TODO: write overview
+This chapter introduces **constants, literals, and strings** in C++. You will learn how to define and use constant values, understand how C++ handles different literal types and numeral systems, and explore both `std::string` and `std::string_view` as modern ways to manage text data.  
+It also covers compile-time concepts such as the **as-if rule**, **constant expressions**, and **constexpr variables**, laying the foundation for **compile-time programming** and optimization.
 
 
 ---
@@ -18,7 +19,14 @@ cmake --build build --target ch05_first
 ---
 
 ## 🎯 Learning Outcomes
-TODO: write outcomes
+By the end of this chapter, you will be able to:
+- Define and use **constant variables** and understand their role in code safety and optimization.
+- Differentiate between **literal constants**, **named constants**, and **macros**.
+- Recognize and apply **literal suffixes** and **numeral systems** (decimal, binary, octal, hexadecimal).
+- Understand the **as-if rule** and how compilers perform **compile-time optimizations** such as constant folding and propagation.
+- Explain what a **constant expression** is and how to declare **constexpr variables and functions**.
+- Use and differentiate between **C-style strings**, `std::string`, and `std::string_view`.
+- Safely manage strings and avoid unnecessary copies through proper ownership and views.
 
 
 ---
@@ -1810,8 +1818,17 @@ Have fun! :)
 ---
 
 ## 🧭 Summary
-TODO: write summary
+Constants and strings form a crucial part of C++’s foundation for both readability and performance.  
+Using `const` and `constexpr` ensures immutability and enables compile-time computation, helping prevent bugs and allowing the compiler to optimize efficiently.  
+Understanding how C++ represents numbers, strings, and constant expressions gives you precise control over **data, memory, and performance**.  
+Finally, mastering `std::string` and `std::string_view` allows you to handle textual data safely and efficiently, using ownership when needed and views when performance matters.
 
-
-### 🧱 Core Concepts You Mastered:
-TODO: write core concepts
+## 🧱 Core Concepts You Mastered
+- **Named and literal constants** — defining immutable values using `const` and `constexpr`.
+- **Literals and suffixes** — understanding how data types are inferred and controlled.
+- **Numeral systems** — representing integers and floating-point numbers in binary, octal, decimal, and hexadecimal.
+- **Compile-time evaluation** — the as-if rule, constant folding, and propagation.
+- **Constant expressions** — expressions guaranteed to be evaluable at compile time.
+- **`constexpr` variables and functions** — enabling true compile-time computation.
+- **Strings in C++** — understanding `C-style strings`, `std::string`, and `std::string_view`.
+- **String ownership vs. viewing** — knowing when to use `std::string` (mutable, owning) or `std::string_view` (lightweight, non-owning).
