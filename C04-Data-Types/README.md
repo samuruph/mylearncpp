@@ -1566,6 +1566,8 @@ Enjoy! :)
 
 ---
 
+## 🧭 Summary
+
 In this chapter, you explored how C++ represents **data at the fundamental level** and how different types define both the **interpretation and precision** of values stored in memory. You learned that everything is ultimately represented as bits and bytes, and that **data types** tell the compiler how to interpret these values. The chapter covered how **fundamental types** like `int`, `float`, `double`, `char`, `bool`, and `void` form the foundation of every program, and how **object sizes** may vary depending on architecture.  
 
 You discovered the key differences between **signed and unsigned integers**, the importance of **fixed-width types** for cross-platform consistency, and how `std::size_t` is used for sizes and indexing. You also explored how **floating-point numbers** can introduce rounding errors due to binary representation, and how **booleans** and **if-statements** enable logical control flow.  
