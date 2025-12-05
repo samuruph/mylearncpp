@@ -1,7 +1,8 @@
 # Chapter 15 - More on Classes
 
 ## 🧭 Overview
-TODO: write overview
+In this chapter you go deeper into C++ classes and see how “real-world” classes are structured and used in larger projects. You learn how the hidden `this` pointer works, how to chain member calls with `return *this`, how to **split** class declarations/definitions across headers and source files, and how to define **types inside classes** (nested enums, aliases, and nested classes). You also meet **destructors** for cleanup, class **templates** with member functions, **static** data and functions shared across all objects, **friendship** for controlled access to private data, and **ref qualifiers** to distinguish behavior on lvalues vs rvalues.
+
 
 ---
 
@@ -19,7 +20,16 @@ cmake --build build --target ch15_first
 
 By the end of this chapter, you’ll be able to:
 
-- TODO: write outcomes
+- Explain what the hidden `this` pointer is and how it enables chained expressions like `obj.setX(1).setY(2);`.
+- Implement **method chaining** by returning `*this` from member functions (e.g., `Calc& add(int x) { m_val += x; return *this; }`).
+- Organize a class across **header (`.h/.hpp`) and source (`.cpp`) files**, and avoid ODR issues using include guards and `inline`.
+- Define and use **nested types** (enums, type aliases, nested classes) inside a class and access them with `Outer::Inner`.
+- Write and reason about **destructors** `~Class()` to handle cleanup of resources automatically when objects go out of scope.
+- Implement **class templates with member functions** and correctly define template member functions outside the class with `template <typename T>`.
+- Use **static member variables** and **static member functions** to share state and behavior across all instances (`Class::s_value` / `Class::getNextID()`).
+- Use **friend non-member functions**, **friend classes**, and **friend member functions** to selectively grant access to private data without making it public.
+- Understand how **ref qualifiers** (`&`, `&&`) on member functions let you specialize behavior for lvalue vs rvalue objects (e.g., returning by reference vs by value).
+
 
 ---
 
@@ -2238,9 +2248,103 @@ As always, have a look at the original summary, and good luck for the quizzes!
 PS: solutions are inside `exercises/sx-questions` folder. Enjoy! :)
 
 
+---
+
 ## 🧭 Summary
 
-TODO: write summary
+In this chapter you saw how C++ classes become much more expressive once you understand how they relate to **objects, lifetime, and interfaces**.  
+You learned that every non-static member function secretly receives a `this` pointer to the object it operates on, that classes should usually be split into headers (`.h`) and source files (`.cpp`), and that types can be nested inside classes to keep related concepts together.  
+
+You also met **destructors** for automatic cleanup, **static members** and **static functions** for class-wide state, **friend** functions/classes for controlled access to internals, and briefly **ref‑qualified** member functions that behave differently on lvalues vs rvalues.  
+Together, these tools let you design classes that are safer, easier to use, and better separated between “public interface” and “hidden implementation”.
+
+---
 
 ### 🧱 Core Concepts You Mastered:
-- TODO: list concepts
+
+- **Hidden `this` pointer & method chaining**  
+  Every non-static member function has a hidden `this` pointer (e.g. `this->m_id`).  
+  You can enable chaining by returning `*this`:
+  ```cpp
+  Calc& add(int v) { m_value += v; return *this; }
+  // usage: calc.add(5).sub(3).mult(4);
+  ```
+
+- **Classes in headers and source files**  
+  - Declarations (class, members, signatures) live in `MyClass.h`.  
+  - Non-trivial definitions live in `MyClass.cpp`.  
+  - Trivial functions (getters/setters, tiny constructors) can stay inline in the class body.
+
+- **Nested types (member types)**  
+  Classes can contain enums, type aliases, and inner classes:
+  ```cpp
+  class Employee {
+  public:
+      using IDType = int;
+  };
+  Employee::IDType id{42};
+  ```
+  This keeps related types in the same scope and avoids polluting the global namespace.
+
+- **Destructors and cleanup**  
+  A destructor `~ClassName()` runs automatically when an object goes out of scope:
+  ```cpp
+  class Simple {
+  public:
+      ~Simple() { std::cout << "Bye\n"; }
+  };
+  ```
+  Use it to release resources (files, sockets, memory) so users can’t “forget” cleanup.
+
+- **Class templates with member functions**  
+  Template parameters can be used for members and member functions:
+  ```cpp
+  template <typename T>
+  class Pair {
+      T m_first{}, m_second{};
+  public:
+      bool isEqual(const Pair& other) const {
+          return m_first == other.m_first && m_second == other.m_second;
+      }
+  };
+  ```
+  When defining members *outside* the class, you must resupply `template <typename T>`.
+
+- **Static data members**  
+  Shared by all objects of the class and accessed as `ClassName::s_member`:
+  ```cpp
+  class Something {
+  public:
+      static inline int s_count{0};
+  };
+  ```
+  Great for counters, ID generators, or shared lookup tables.
+
+- **Static member functions**  
+  Belong to the class, not to an object (no `this` pointer).  
+  They can access only static members directly:
+  ```cpp
+  class IDGen {
+      static inline int s_next{1};
+  public:
+      static int getNext() { return s_next++; }
+  };
+  ```
+
+- **Friend non-member functions and friend classes**  
+  `friend` lets specific functions or classes access private data:
+  ```cpp
+  class Accumulator {
+      int m_value{};
+      friend void print(const Accumulator&);
+  };
+  ```
+  Use sparingly; prefer a clean public interface (getters) over friends when possible.
+
+- **Ref-qualified member functions (`&` / `&&`)**  
+  You can write different overloads for lvalues and rvalues:
+  ```cpp
+  const std::string& name() const &  { return m_name; } // lvalues: cheap ref
+  std::string        name() const && { return std::move(m_name); } // rvalues: safe copy/move
+  ```
+  This helps avoid dangling references when calling getters on temporaries.
