@@ -2,6 +2,10 @@
 
 ## 🧭 Overview
 
+This chapter introduces **containers** and focuses on arrays, especially `std::vector`, as your first real workhorse data structure.  
+You learn how arrays store elements **contiguously in memory**, how to access them efficiently with `operator[]`, and when to prefer safer tools like `at()`.  
+On top of that, the chapter connects arrays with **copy vs move semantics**, shows how `std::vector` grows (length vs capacity), and how to use it both as a dynamic array *and* as a stack-like container with `push_back` / `emplace_back`.
+
 
 ---
 
@@ -17,12 +21,23 @@ cmake --build build --target ch16_first
 
 ## 🎯 Learning Outcomes
 
+By the end of this chapter, you’ll be able to:
+- ✅ Explain what a **container** is and how arrays / `std::vector` fit into that picture.
+- ✅ Use `std::vector<T>` with list initialization, e.g. `std::vector<int> v{1, 2, 3};`.
+- ✅ Safely access elements via `v[i]` and `v.at(i)`, and know why `operator[]` is **unchecked**.
+- ✅ Use `v.size()`, `std::size(v)`, and `std::ssize(v)` and understand `size_type` (usually `std::size_t`).
+- ✅ Traverse containers with classic `for` + indices and with **range-based for**: `for (const auto& x : v)`.
+- ✅ Describe **copy semantics** vs **move semantics**, and why returning `std::vector` or `std::string` by value is okay (moves instead of heavy copies).
+- ✅ Manage dynamic growth of vectors with `resize()`, `reserve()`, `capacity()`, `shrink_to_fit()`.
+- ✅ Use `std::vector` as a **stack** with `push_back` / `emplace_back`, and know when `emplace_back(args...)` is more efficient.
+- ✅ Recognize the quirks of `std::vector<bool>` and why it’s usually better to avoid it.
+
 
 ---
 
 ## Sections
 
-### S16 - 16.1 Introduction to containers and arrays
+### S01 - 16.1 Introduction to containers and arrays
 #### The variable scalability challange:
 Consider a scenario where you want to record the test scores of 30 students and calculate the average for the class. To do so, with the knowledge you have so far, you would create 30 variables to hold each student's score:
 ```cpp
@@ -160,7 +175,7 @@ In the next lesson, we will introduce our first container, `std::vector`, and ex
 
 ---
 
-### S16 - 16.2 Introduction to std::vector and list constructors
+### S02 - 16.2 Introduction to std::vector and list constructors
 In this lessos we will introduce `std::vector`, solving one part of the scalability challenge we saw in the previous lesson.
 
 #### Introduction to `std::vector`:
@@ -367,7 +382,7 @@ So, the name `vector` was chosen for historical reasons, even though it would ha
 
 ---
 
-### S16 - 16.3 `std::vector` and the unsigned length and subscript problem
+### S03 - 16.3 `std::vector` and the unsigned length and subscript problem
 In the previous lesson, we introduced `operator[]`, which can be used to subscript an array (including `std::vector`) using an integral index. In this lesson, we will look at other ways to access array elements, as well as few additional ways to get the length of an container class.
 
 But first, we need to discuss one majopr mistake that the designers of C++ made when defining the Containers library: they defined the length of a container as an **unsigned** integer type (`std::size_t`), instead of a signed integer type (e.g., `int` or `std::ptrdiff_t`).
@@ -666,7 +681,7 @@ int main()
 
 ---
 
-### S16 - 16.4 Passing `std::vector`
+### S04 - 16.4 Passing `std::vector`
 As for `std::string`, we prefer passing `std::vector` objects by `const` reference to avoid unnecessary (expensive) copies. Doing so, we should always specify the template argument(s) explicitly, as CTAD (Class Template Argument Deduction) does not apply to function parameters.
 ```cpp
 #include <iostream>
@@ -864,7 +879,7 @@ The best option is to avoid writing functions that rely on the user passing in a
 
 ---
 
-### S16 - 16.5 Returning `std::vector`, and an introduction to move semantics
+### S05 - 16.5 Returning `std::vector`, and an introduction to move semantics
 In the last lessos, we said that we prefer passing `std::vector` objects by `const` reference to avoid unnecessary copies. However, when returning a `std::vector` from a function, we usually return it **by value**. 
 
 If you are surprised by this, don't worry, I was as well...
@@ -1015,7 +1030,7 @@ Elision is the best option in this case, but wheteher it happens is up to the co
 
 ---
 
-### S16 - 16.6 Arrays and loops
+### S06 - 16.6 Arrays and loops
 In the introduction of this chapter, we showed the scalability challenges that arise when using multiple individual variables to represent a collection of related data. We then introduced arrays as a solution to this problem, allowing us to group related data together in a single object that can be easily managed and manipulated. In this lesson, we will discuss more in depth how arrays and loops work together to process collections of data efficiently.
 
 #### The variable scalability challange, revisited:
@@ -1179,7 +1194,7 @@ In this example, the loop condition `index <= length` causes the loop to iterate
 
 ---
 
-### S16 - 16.7 Arrays, loops, and sign challange solutions
+### S07 - 16.7 Arrays, loops, and sign challange solutions
 In a previous chapter, we noted how we generally prefer to use signed values to hold quantities, because unsigned values can act in unexpected ways when they go below zero (e.g., wrap around to a large positive value). However, when working with arrays and loops, we often need to use unsigned values (e.g., `std::size_t`) to represent the length of the array and the indices used to access its elements. This can lead to problems as this one:
 ```cpp
 #include <iostream>
@@ -1549,52 +1564,1250 @@ All of the options presented above have their own downsides, so it’s hard to r
 C++ provides several other approaches to traverse arrays, without using indices at all, avoiding all of these signed-unsigned conversion issues. 
 
 Two common methods for array traversal are:
-1. **Range-based for loops:** 
-2. **Iterators:**
+1. **Range-based for loops:** iterate directly over elements without indices.  
+2. **Iterators:** pointer-like objects enabling safe forward/backward traversal without numeric indices.
 
 If you’re only using the index variable to traverse the array, then prefer a method that does not use indices.
 
 > **Best Practice:** Avoid array indexing with integral values whenver possible.
 
 #### Summary:
-- 
+- Unsigned indices (`size_t`) can cause wrap-around bugs when decremented (e.g., reverse loops).  
+- Signed indices avoid wrap-around but require many casts when indexing STL containers.  
+- Using container-specific `size_type` works but is verbose and hurts readability.  
+- Casting `size()` to a signed type works but clutters the code.  
+- Using helper functions (`toUZ`) or custom signed array views reduces clutter but adds complexity.  
+- Indexing via `arr.data()[index]` avoids sign-conversion warnings and keeps code readable.  
+- The safest and cleanest approach: **avoid integral indexing altogether**.  
+- Prefer **range-based for loops** when you only need the elements.  
+- Prefer **iterators** when you need controlled traversal (forward/backward/custom).  
 
 
+---
+
+### S08 - 16.8 Range-based for loops (for-each)
+Here another example of using a for loop to traverse an array:
+```cpp
+#include <iostream>
+#include <vector>
+
+int main()
+{
+    std::vector fibonacci { 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89 };
+
+    std::size_t length { fibonacci.size() };
+    for (std::size_t index { 0 }; index < length; ++index)
+       std::cout << fibonacci[index] << ' ';
+
+    std::cout << '\n';
+
+    return 0;
+}
+```
+Although for-loops provide a convenient and flexible way to iterate through an array, they are also easy to mess up, prone to off-by-one errors, and subject to array indexing sign problems.
+
+Because iterating over an array is so common, C++ supports another type of for loop, called **range-based for loop** or **for-each loop**. This for loop allows traversal of a container without having to do explicit indexing or iteration control. This is generally simpler, safer, and more readable than using a for loop.
+
+#### Range-based for loops:
+The **range-based for loop** has the following syntax:
+```cpp
+for (element_declaration : container)
+    statement;
+```
+Where:
+- `element_declaration` is a variable declaration that will be initialized with each element of the container in turn.
+- `container` is the container to be traversed.
+- `statement` is the code to be executed for each element of the container.
+
+When the loop starts, the `element_declaration` is initialized with the first element of the container, and the `statement` is executed. Then, the `element_declaration` is initialized with the second element of the container, and the `statement` is executed again, and so on, until all elements of the container have been processed. At the end, this loop will iterate over all elements of `container` and execute `statement` for each element.
+
+For best results, `element_declaration` should have the same type as the container's elements, otherwise type conversion will occur, which can be unexpected or even dangerous.
+
+> **Best Practice:** Use range-based for loops to iterate over containers, as they are generally simpler, safer, and more readable than using a for loop.
+
+Here is. a simple example of using a range-based for loop to iterate over an array:
+```cpp
+#include <iostream>
+#include <vector>
+
+int main()
+{
+    std::vector fibonacci { 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89 };
+
+    for (int num : fibonacci) // iterate over array fibonacci and copy each value into `num`
+       std::cout << num << ' '; // print the current value of `num`
+
+    std::cout << '\n';
+
+    return 0;
+}
+```
+Printing:
+```
+0 1 1 2 3 5 8 13 21 34 55 89 
+```
+In this way, no index or array's length is needed to iterate over the array.
+
+#### Range-based for loops and empty containers:
+If the container is empty, the range-based for loop will not execute at all, and the `statement` will not be executed:
+```cpp
+#include <iostream>
+#include <vector>
+
+int main()
+{
+    std::vector empty { };
+
+    for (int num : empty)
+       std::cout << "Hi mom!\n";
+
+    return 0;
+}
+```
+This code will not print anything, because the container is empty.
+
+#### Range-based for loops and type deduction using `auto` keyword:
+Because `element_declaration` should have the same type as the container's elements, we can use `auto` to let the compiler deduce the type of the elements, reducing risks of type conversion and making the code more readable:
+```cpp
+#include <iostream>
+#include <vector>
+
+int main()
+{
+    std::vector fibonacci { 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89 };
+
+    for (auto num : fibonacci) // compiler will deduce type of num to be `int`
+       std::cout << num << ' ';
+
+    std::cout << '\n';
+
+    return 0;
+}
+```
+In this way, we are sure that the type of `num` (deduced to `int` by the compiler) is the same as the type of the elements in the container (`std::vector fibonacci` has elements of type `int`), and we avoid type conversion issues.
+
+> **Best Practice:** Use `auto` to let the compiler deduce the type of the elements in the container, reducing risks of type conversion and making the code more readable.
+
+Another benefit of using `auto` is that if the element type of the array changes, we don't need to change the type of the `element_declaration`.
+
+#### Avoid element copies using references:
+Consider the following range-based for loop example, which iterates over an array of `std::string` objects:
+```cpp
+#include <iostream>
+#include <string>
+#include <vector>
+
+int main()
+{
+    std::vector<std::string> words{ "peter", "likes", "frozen", "yogurt" };
+
+    for (auto word : words)
+        std::cout << word << ' ';
+
+    std::cout << '\n';
+
+    return 0;
+}
+```
+For each iteration of the loop, the `word` variable is initialized with a copy of the current element of the `words` vector. This can be inefficient if the elements are large objects, such as `std::string` objects.
+In general, we want to avoid unnecessary copies like in this case, since we are just printing the elements.
+
+To solve this issue, we can simply make our `element_declaration` (`word`) a (const) reference to the current element of the container, which will avoid unnecessary copies:
+```cpp
+#include <iostream>
+#include <string>
+#include <vector>
+
+int main()
+{
+    std::vector<std::string> words{ "peter", "likes", "frozen", "yogurt" };
+
+    for (const auto& word : words) // word is now a const reference
+        std::cout << word << ' ';
+
+    std::cout << '\n';
+
+    return 0;
+}
+```
+Doing so, at each iteration, `word` will be bound to the next array element.
+
+If the reference is made non-const, the elements of the container can be also modified (something not possible if our `element_declaration` was a copy or a const reference).
+
+#### When to use `auto` vs `auto&` vs `const auto&`:
+Normally:
+- Use `auto` for cheap-to-copy types (e.g., `int`, `double`, etc)
+- Use `auto&` when you want to modify the elements of the container
+- Use `const auto&` for expensive-to-copy types (e.g., `std::string`, `std::vector`, etc)
+
+In case of range-based for loops, many developers think it is preferenable to always use `const auto&` because it is more future-proof, since it will work even if the container is modified in the future.
+
+For example:
+```cpp
+#include <iostream>
+#include <string_view>
+#include <vector>
+
+int main()
+{
+    std::vector<std::string_view> words{ "peter", "likes", "frozen", "yogurt" }; // elements are type std::string_view
+
+    for (auto word : words) // We normally pass string_view by value, so we'll use auto here
+        std::cout << word << ' ';
+
+    std::cout << '\n';
+
+    return 0;
+}
+```
+In this example, we have a `std::vector` containing `std::string_view` objects, and we want to print them. Since we usually pass `std::string_view` by value, `auto` here seems appropriate.
+
+Consider now what would happen if `words` is later updated to an array of `std::string` objects:
+```cpp
+#include <iostream>
+#include <string>
+#include <vector>
+
+int main()
+{
+    std::vector<std::string> words{ "peter", "likes", "frozen", "yogurt" }; // obvious we should update this
+
+    for (auto word : words) // Probably not obvious we should update this too
+        std::cout << word << ' ';
+
+    std::cout << '\n';
+
+    return 0;
+}
+```
+With this code, we are copying each `std::string` object into `word`, which is not efficient, getting a huge performance hit just changing few characters in the code.
+
+There are a couple of reasonable ways to avoid this issue:
+- Do not use type duduction at all. If we defined `element_declaration` as `std::string_view`, the compiler will implicitly convert the `std::string` objects to `std::string_view` objects, avoiding the copy.
+- Use `const auto&` instead of `auto`. In this way, we avoid the copy and we can still modify the elements of the container.
+
+> **Best Practice:** For range-based for loops, prefer to define the element type as:
+> - `auto` when you want to modify copies of the elements.
+> - `auto&` when you want to modify the original elements.
+> - `const auto&` otherwise (e.g., when you just need to view the original elements).
+
+#### Range-based for loops and other standard container types:
+Range-based for loops work with a wide variety of array types, including (non-decayed) C-style arrays, `std::array`, `std::vector`, `std::list`, `std::set`, `std::map`, and more.
+
+#### Getting the index of the current element:
+Range-based for loops **do not** provide a way to get the index of the current element. This is because many of the data structure that work with range-based for loops do not support indices (e.g., `std::list` and `std::set`).
+
+To get this, you can always defined a counter variable and increment it at each iteration!
+
+#### Range-based for loops in reverse (C++20):
+Prior to C++20, there was no way to iterate over a container in reverse order using a range-based for loop. 
+As of C++20 instead, we can use `std::views::reverse` to reverse the order of the elements in the container:
+```cpp
+#include <iostream>
+#include <ranges> // C++20
+#include <string_view>
+#include <vector>
+
+int main()
+{
+    std::vector<std::string_view> words{ "Alex", "Bobby", "Chad", "Dave" }; // sorted in alphabetical order
+
+    for (const auto& word : std::views::reverse(words)) // create a reverse view
+        std::cout << word << ' ';
+
+    std::cout << '\n';
+
+    return 0;
+}
+```
+This will print the elements in reverse order:
+```
+Dave
+Chad
+Bobby
+Alex
+```
+
+> **Best Practice:** Use `std::views::reverse` to reverse the order of the elements in the container (C++20).
+
+#### Summary:
+- Range-based for loops are a powerful and concise way to iterate over the elements of a container:
+    ```cpp
+    for (element_declaration : container)
+        statement;
+    ```
+- Use `auto` for cheap-to-copy types, `auto&` when you want to modify the elements of the container, and `const auto&` otherwise.
+- Range-based for loops work with a wide variety of array types, including (non-decayed) C-style arrays, `std::array`, `std::vector`, `std::list`, `std::set`, `std::map`, and more.
+- Range-based for loops **do not** provide a way to get the index of the current element.
+- As of C++20, you can use `std::views::reverse` to reverse the order of the elements in the container.
 
 
+---
+
+### S09 - 16.9 Array indexing and length using enumerators
+One of the biggest documentation problems with arrays is that integer do not provide any kind of information about the meaning of the value they store. For example, consider the following code:
+```cpp
+#include <vector>
+
+int main()
+{
+    std::vector testScores { 78, 94, 66, 77, 14 };
+
+    testScores[2] = 76; // who does this represent?
+}
+```
+Who is the student at position `2`? We have no idea! 
+
+#### Using unscoped enumerators for indexing:
+In a previous lessons, we have seen that the index of `std::vector<T>::operator[]` (and the other standard container types) is of type `size_type`, that is generally an alias for `std::size_t`. Therefore, our indices must be of type `size_type` as well. 
+
+Since unscoped enumerators will implicitly convert to a `size_type`, we can use them as indices for standard containers. For example:
+```cpp
+#include <vector>
+
+namespace Students
+{
+    enum Names
+    {
+        kenny, // 0
+        kyle, // 1
+        stan, // 2
+        butters, // 3
+        cartman, // 4
+        max_students // 5
+    };
+}
+
+int main()
+{
+    std::vector testScores { 78, 94, 66, 77, 14 };
+
+    testScores[Students::stan] = 76; // we are now updating the test score belonging to stan
+
+    return 0;
+}
+```
+In this example, it is much clearer what each of the array elements represents. Because enumerators are implicitly `constexpr`, conversion of an enumerator to an unsigned integral type is not a narrowing conversion, and the code is valid.
+
+#### Using a non-`constepxr` unscoped enumeration for indexing:
+The underlying type of an unscoped enumeration is implementation defined (and thus, could be either a signed or unsigned integral type). This means that we cannot use a non-`constexpr` unscoped enumeration as an index for a standard container, because the conversion of a non-`constexpr` unscoped enumeration to an unsigned integral type is a narrowing conversion. For example:
+```cpp
+#include <vector>
+
+namespace Students
+{
+    enum Names
+    {
+        kenny, // 0
+        kyle, // 1
+        stan, // 2
+        butters, // 3
+        cartman, // 4
+        max_students // 5
+    };
+}
+
+int main()
+{
+    std::vector testScores { 78, 94, 66, 77, 14 };
+    Students::Names name { Students::stan }; // non-constexpr
+
+    testScores[name] = 76; // may trigger a sign conversion warning if Student::Names defaults to a signed underlying type
+
+    return 0;
+}
+```
+In this case, the conversion of `name` (of type `Students::Names`) to `size_type` (of type `std::size_t`) is a narrowing conversion, and the code is invalid, since name is a non-`constexpr` unscoped enumeration. 
+
+Another option would be to explicitly specify the underlying type of the unscoped enumeration to be an unsigned int:
+```cpp
+#include <vector>
+
+namespace Students
+{
+    enum Names : unsigned int // explicitly specifies the underlying type is unsigned int
+    {
+        kenny, // 0
+        kyle, // 1
+        stan, // 2
+        butters, // 3
+        cartman, // 4
+        max_students // 5
+    };
+}
+
+int main()
+{
+    std::vector testScores { 78, 94, 66, 77, 14 };
+    Students::Names name { Students::stan }; // non-constexpr
+
+    testScores[name] = 76; // not a sign conversion since name is unsigned
+
+    return 0;
+}
+```
+In this last example, since the underlying type of `Names` is `unsigned int`, the conversion of `name` (of type `Students::Names`) to `size_type` (of type `std::size_t`) is not a narrowing conversion, and the code is valid.
+
+#### Using count enumerator:
+In the last example we have defined an extra enumerator `max_students` to represent the number of students (in the example, it will have value `5`). Informally, we will call this **count enumerator**, as its value represents the number of elements in the array. 
+
+This count enumerator can then be used anywhere we need a count of the prior enumerators, for example:
+```cpp
+#include <iostream>
+#include <vector>
+
+namespace Students
+{
+    enum Names
+    {
+        kenny, // 0
+        kyle, // 1
+        stan, // 2
+        butters, // 3
+        cartman, // 4
+        // add future enumerators here
+        max_students // 5
+    };
+}
+
+int main()
+{
+    std::vector<int> testScores(Students::max_students); // Create a vector with 5 elements
+
+    testScores[Students::stan] = 76; // we are now updating the test score belonging to stan
+
+    std::cout << "The class has " << Students::max_students << " students\n";
+
+    return 0;
+}
+```
+Here, `Students::max_students` is used to create a vector with 5 elements, and to print the number of students in the class. 
+
+This is nice because if we add or remove students from the `Names` enumerator, we do not need to update the code that uses `max_students`:
+```cpp
+#include <vector>
+#include <iostream>
+
+namespace Students
+{
+    enum Names
+    {
+        kenny, // 0
+        kyle, // 1
+        stan, // 2
+        butters, // 3
+        cartman, // 4
+        wendy, // 5 (added)
+        // add future enumerators here
+        max_students // now 6
+    };
+}
+
+int main()
+{
+    std::vector<int> testScores(Students::max_students); // will now allocate 6 elements
+
+    testScores[Students::stan] = 76; // still works
+
+    std::cout << "The class has " << Students::max_students << " students\n";
+
+    return 0;
+}
+```
+This will work without any issues, and the count enumerator will be updated automatically.
+
+#### Asserting on array length with a count enumerator:
+More often, we’re creating an array using an initializer list of values, with the intent of indexing that array with enumerators. In such cases, it can be useful to assert that the size of the container equals our count enumerator. If this assert triggers, it means that either our enumerators have changed, or our initializer list has changed, and we need to update the code that uses the count enumerator.
+
+For example:
+```cpp
+#include <cassert>
+#include <iostream>
+#include <vector>
+
+enum StudentNames
+{
+    kenny, // 0
+    kyle, // 1
+    stan, // 2
+    butters, // 3
+    cartman, // 4
+    max_students // 5
+};
+
+int main()
+{
+    std::vector testScores { 78, 94, 66, 77, 14 };
+
+    // Ensure the number of test scores is the same as the number of students
+    assert(std::size(testScores) == max_students);
+
+    return 0;
+}
+```
+If `max_students` changes, the assert will trigger, and we will need to update the code that uses `max_students`.
+
+> **Best Practice:** Use a `static_assert` to ensure the length of your constexpr array matches your count enumerator.
+
+> **Best Practice:** Use an `assert` to ensure the length of your non-constexpr array matches your count enumerator.
+
+#### Arrays and enum classes:
+Because unscoped enumerations pollute the namespace they are defined in with their enumerators, it is preferable to use enum classes in cases where the enum is not already contained in another scope region (e.g. a namespace or class).
+
+However, because enum class do not have an implicit conversion to integarl types, we run into problem when using them as array indices:
+```cpp
+#include <iostream>
+#include <vector>
+
+enum class StudentNames // now an enum class
+{
+    kenny, // 0
+    kyle, // 1
+    stan, // 2
+    butters, // 3
+    cartman, // 4
+    max_students // 5
+};
+
+int main()
+{
+    // compile error: no conversion from StudentNames to std::size_t
+    std::vector<int> testScores(StudentNames::max_students);
+
+    // compile error: no conversion from StudentNames to std::size_t
+    testScores[StudentNames::stan] = 76;
+
+    // compile error: no conversion from StudentNames to any type that operator<< can output
+    std::cout << "The class has " << StudentNames::max_students << " students\n";
+
+    return 0;
+}
+```
+
+There are a few ways to fix this. The most obvious is to `static_cast` the enum class to an integer type:
+```cpp
+#include <iostream>
+#include <vector>
+
+enum class StudentNames
+{
+    kenny, // 0
+    kyle, // 1
+    stan, // 2
+    butters, // 3
+    cartman, // 4
+    max_students // 5
+};
+
+int main()
+{
+    std::vector<int> testScores(static_cast<int>(StudentNames::max_students));
+
+    testScores[static_cast<int>(StudentNames::stan)] = 76;
+
+    std::cout << "The class has " << static_cast<int>(StudentNames::max_students) << " students\n";
+
+    return 0;
+}
+```
+
+However, this is not optimal since it is painful to type and also clutters the code. 
+
+A better option is to use the helper function we introduced in the previous chapter, which allows us to convert enumerators of enum classes to integral values using unary `operator+`:
+```cpp
+#include <iostream>
+#include <type_traits> // for std::underlying_type_t
+#include <vector>
+
+enum class StudentNames
+{
+    kenny, // 0
+    kyle, // 1
+    stan, // 2
+    butters, // 3
+    cartman, // 4
+    max_students // 5
+};
+
+// Overload the unary + operator to convert StudentNames to the underlying type
+constexpr auto operator+(StudentNames a) noexcept
+{
+    return static_cast<std::underlying_type_t<StudentNames>>(a);
+}
+
+int main()
+{
+    std::vector<int> testScores(+StudentNames::max_students);
+
+    testScores[+StudentNames::stan] = 76;
+
+    std::cout << "The class has " << +StudentNames::max_students << " students\n";
+
+    return 0;
+}
+```
+However, if you’re going to be doing a lot of enumerator to integral conversions, it’s probably better to just use a standard enum inside a namespace (or class).
+
+## Summary
+- Raw integer indices provide no semantic meaning and make array access hard to understand.
+- Unscoped enums can be safely used as array indices **when constexpr**, improving readability.
+- Non-`constexpr` unscoped enums may cause narrowing/sign-conversion issues unless their underlying type is explicitly unsigned.
+- A **count enumerator** (e.g. `max_students`) is useful to represent array size and keep code consistent when enums change.
+- Use `assert` / `static_assert` to ensure array size matches the count enumerator.
+- `enum class` avoids namespace pollution but requires explicit conversion to integral types for indexing.
+- Frequent enum-to-integer conversions favor unscoped enums in a namespace over `enum class`.
 
 
+---
+
+### S10 - 16.10 `std::vector` resizing and capacity
+While in the previous lessons we applied the concepts we learnt on `std::vector` specifically, we can apply the same concepts to any array type (e.g., `std::array` or C-style arrays).
+In the remaining lessons in this chapter, we are going to focus on the main thing that makes `std::vector` unique compared to the other array types: its dynamic size, that is the ability to resize itself after it has been instantiated.
+
+#### Fixed-size arrays vs dynamic arrays:
+Most array types have. acommon limitation: the length of the array must be known at the point of instantiation, and cannot be changed. uch arrays are called **fixed-size arrays**. On the other hand, `std::vector` is a **dynamic array**, that is an array that can be resized after it has been instantiated.
+
+Overall, we have two main types of arrays:
+- **fixed-size arrays**: the length of the array is known at the point of instantiation and cannot be changed (e.g., C-style arrays, `std::array`)
+- **dynamic arrays**: the length of the array can be changed after the array has been instantiated (e.g., `std::vector`).
+
+#### Resizing a `std::vector` at runtime:
+We can resize a `std::vector` at runtime using the `resize` member function:
+```cpp
+#include <iostream>
+#include <vector>
+
+int main()
+{
+    std::vector v{ 0, 1, 2 }; // create vector with 3 elements
+    std::cout << "The length is: " << v.size() << '\n';
+
+    v.resize(5);              // resize to 5 elements
+    std::cout << "The length is: " << v.size() << '\n';
+
+    for (auto i : v)
+        std::cout << i << ' ';
+
+    std::cout << '\n';
+
+    return 0;
+}
+```
+This prints:
+```
+The length is: 3
+The length is: 5
+0 1 2 0 0
+```
+To resize a `std::vector`, we can use the `resize` member function, which takes a single argument: the new size of the vector.
+
+Some different cases could happen here:
+- if the new size is smaller than the current size, the vector is truncated.
+- if the new size is larger than the current size, the vector is padded with value-initialized (default-initialization for class type, and zero-initialization for other types) elements, and the existing elements are preserved.
+
+In case we resize a vector to be smaller:
+```cpp
+#include <iostream>
+#include <vector>
+
+void printLength(const std::vector<int>& v)
+{
+	std::cout << "The length is: "	<< v.size() << '\n';
+}
+
+int main()
+{
+    std::vector v{ 0, 1, 2, 3, 4 }; // length is initially 5
+    printLength(v);
+
+    v.resize(3);                    // resize to 3 elements
+    printLength(v);
+
+    for (int i : v)
+        std::cout << i << ' ';
+
+    std::cout << '\n';
+
+    return 0;
+}
+```
+This prints:
+```
+The length is: 5
+The length is: 3
+0 1 2
+```
+As you can see, the existing elements are preserved, and the vector is truncated to the new size.
+
+#### The length vs capacity of a `std::vector`:
+Up to this point, we have only talked about the **length** of a `std::vector`, that is the number of elements it contains in the current moment. However, `std::vector` also has a **capacity**, that is how many elements the `std::vector` (in this case) has allocated storage for.
+
+A `std::vector` with a capcity of 5 has allocated space for 5 elements, but it may contain fewer elements. For example, if the vector contains 2 elements, it will have a capacity of 5, but a length of 2. 
+
+#### getting the capacity of a `std::vector`:
+We can get the capacity of a `std::vector` using the `capacity` member function:
+```cpp
+#include <iostream>
+#include <vector>
+
+void printCapLen(const std::vector<int>& v)
+{
+	std::cout << "Capacity: " << v.capacity() << " Length:"	<< v.size() << '\n';
+}
+
+int main()
+{
+    std::vector v{ 0, 1, 2 }; // length is initially 3
+
+    printCapLen(v);
+
+    for (auto i : v)
+        std::cout << i << ' ';
+    std::cout << '\n';
+
+    v.resize(5); // resize to 5 elements
+
+    printCapLen(v);
+
+    for (auto i : v)
+        std::cout << i << ' ';
+    std::cout << '\n';
+
+    return 0;
+}
+```
+This could print (depending on the machine and the implementation of `std::vector`):
+```
+Capacity: 3 Length: 3
+0 1 2
+Capacity: 5 Length: 5
+0 1 2 0 0
+```
+In this example, the initial capacity of the vector was 3, but after resizing to 5 elements, the capacity was increased to 5.
+
+Most of the time, you will not use the capacity of a `std::vector` directly, but we will use in the following examples to understand how `std::vector` works at low level.
+
+#### Reallocation of storage, and why it is expensive:
+When a `std::vector` changes the amount of storage it is managing, this process ic called **reallocation**. Informally, this process goes as follows:
+- The `std::vector` acquires new memory with capacity for the desired number of elements (e.g., `new_size * sizeof(T)` bytes).
+- These elements are value-initialized.
+- The elements in the old memory are copied (or moved, if possible) to the new memory. The old memory is then returned to the system and released.
+- The capacity and the length of the `std::vector` are updated to reflect the new state.
+
+From outside, it seems that the `std::vector` has just changed its capacity, but in reality, it has acquired new memory and copied the elements to the new memory. This process is expensive because it involves copying (or moving) elements, and it also involves allocating and deallocating memory.
+
+#### Why differentiate length and capacity?
+If a `std::vector` had only have its length, then every `resize()` request would require a reallocation to the new length. Having both length and capacity instead, gives the object the ability to decide when a reallocation is actually needed or not.
+
+For example:
+```cpp
+#include <iostream>
+#include <vector>
+
+void printCapLen(const std::vector<int>& v)
+{
+	std::cout << "Capacity: " << v.capacity() << " Length:"	<< v.size() << '\n';
+}
+
+int main()
+{
+    // Create a vector with length 5
+    std::vector v{ 0, 1, 2, 3, 4 };
+    v = { 0, 1, 2, 3, 4 }; // okay, array length = 5
+    printCapLen(v);
+
+    for (auto i : v)
+        std::cout << i << ' ';
+    std::cout << '\n';
+
+    // Resize vector to 3 elements
+    v.resize(3); // we could also assign a list of 3 elements here
+    printCapLen(v);
+
+    for (auto i : v)
+        std::cout << i << ' ';
+    std::cout << '\n';
+
+    // Resize vector back to 5 elements
+    v.resize(5);
+    printCapLen(v);
+
+    for (auto i : v)
+        std::cout << i << ' ';
+    std::cout << '\n';
+
+    return 0;
+}
+```
+This prints:
+```
+Capacity: 5  Length: 5
+0 1 2 3 4 
+Capacity: 5  Length: 3
+0 1 2 
+Capacity: 5  Length: 5
+0 1 2 0 0
+```
+In this example:
+- The initial capacity is 5, and the initial length is 5.
+- When we resize the vector to 3 elements, the capacity is still 5, but the length is 3. This means that the vector has not been reallocated, leading to a more efficient operation.
+- Finally, when we resize the vector back to 5 elements, the capacity is still 5, but the length is 5. It simply changed the length back to 5, without touching the memory, sicne that vector already had a capacity of 5.
+
+By separating length and capacity, we avoided 2 reallocations, leading to a more efficient operation.
+
+#### Vector indexing is based on length, not capacity:
+Perhaps surprisingly, the subscript operator `operator[]` and `at()` member function are based on the length of the vector, not its capacity. So for example, in the example before, when `v` has capacity 5 and length 3, `v[3]` and `v.at(3)` will throw an exception, since there is no valid element at index 3.
+
+#### Shrinking a `std::vector`:
+Note this difference:
+- When resizing to a larger size: both length and capacity (if required) will be increased.
+- When resizing to a smaller size: only the length will be decreased, the capacity will remain the same.
+
+Sometimes, we may want to shrink the capacity of a `std::vector` to match its length, for example when we resize a very large vector to a smaller size (this would potentially lead to a big memory waste). This can be done using the `shrink_to_fit` member function, that requests the `std::vector` to release any unused memory:
+```cpp
+#include <iostream>
+#include <vector>
+
+void printCapLen(const std::vector<int>& v)
+{
+	std::cout << "Capacity: " << v.capacity() << " Length:"	<< v.size() << '\n';
+}
+
+int main()
+{
+
+	std::vector<int> v(1000); // allocate room for 1000 elements
+	printCapLen(v);
+
+	v.resize(0); // resize to 0 elements
+	printCapLen(v);
+
+	v.shrink_to_fit();
+	printCapLen(v);
+
+	return 0;
+}
+```
+This could print (depending on the machine):
+```
+Capacity: 1000 Length: 1000
+Capacity: 1000 Length: 0
+Capacity: 0 Length: 0
+```
+As you can see, when `shrink_to_fit` is called, the capacity is reduced to 0, matching the length.
+
+Note that this request is **non-binding**, meaning that the implementation is free to ignore it. 
+
+#### Summary:
+- `std::vector` is a dynamic array that can grow and shrink as needed. This is different from `std::array` and `std::span`, which have a fixed size at compile time.
+- `std::vector` can be resized using the `resize` member function, which changes the length of the vector.
+- Allocated memory by `std::vector` (its capacity) is not automatically released when the vector is resized to a smaller size. 
+- `shtink_to_fit` requests the `std::vector` to release any unused memory (make its capacity equal to its length), but it is non-binding, meaning that the implementation is free to ignore it.
 
 
+---
+
+### S11 - 16.11 `std::vector` and stack behavior
+Consider the case where you are writing a program where the user will enter a list of values (such as a bunch of test scores). In this case, the number of values that they will be entering is not known at compile time, and could vary every time they run the program. 
+In this case, we can use a `std::vector` to store the values, and we can resize it as needed. 
+
+Based on what we have discussed so afr, there are few ways to approach this:
+1. You could ask the user how many entried they have, create a vector of that size (`std::vector<int> v(size);`), and then fill it with the values. This requires the user to know in advance how many values they will be entering, and it might not be ideal.
+2. You could assume that the user will not enter more than a certain number of values (e.g., 100), and create a vector of that size (`std::vector<int> v(100);`). Then, you could use a loop to fill the vector with the values, and resize it to the actual number of values entered. This is a common approach, and it is not too bad, but it is not the best, since the user is limited to enter at maximum `N` values.
+3. We could address the problem by adding some logic to resize the vector larger when the user reaches the maximum number of values. This will increase the code complexity, and definitely lead to additional bugs.
+
+The problem here is that we are trying to guess the number of values that the user will enter, and this is not a good idea, since there are situation when the number of values is really unknown a priori. To handle this case, there is a better approach, that we will discuss in the next.
+
+Fist, some background.
+
+#### What is a stack?
+A **stack** is a data structure that stores elements in a Last In First Out (LIFO) manner. This means that the last element added to the stack is the first one to be removed.
+Think about it as a stack of plates. You can only add a plate to the top of the stack, and you can only remove a plate from the top of the stack. 
+
+#### Stacks in programming:
+In programming, a **stack** is a container data type where the insertion and removal of elements occurs in a Last In First Out (LIFO) manner. This is commonly implemented by two main operations:
+- `push`: add an element to the top of the stack
+- `pop`: remove the top element from the stack
+
+| Operation Name | Behavior | Required? | Notes |
+| --- | --- | --- | --- |
+| Push | Add an element to the top of the stack | Yes |                                     |
+| Pop  | Remove the top element from the stack | Yes | May return the removed element or void|
+| Top or Peek | Return the top element of the stack | Optional | Does not remove the element             |
+| Empty| Return true if the stack is empty, false otherwise | Optional |                                     |
+| Size | Return the number of elements in the stack | Optional |                                     |
+
+For example, here’s a short sequence showing how pushing and popping on a stack works:
+```
+       (Stack: empty)
+Push 1 (Stack: 1)
+Push 2 (Stack: 1 2)
+Push 3 (Stack: 1 2 3)
+Pop    (Stack: 1 2)
+Push 4 (Stack: 1 2 4)
+Pop    (Stack: 1 2)
+Pop    (Stack: 1)
+Pop    (Stack: empty)
+```
+
+#### Stacks in C++:
+In some languages, a stack is implemented as its own discrete container data type. But this could be limited, since you could not iterate over it without modifying the data structure itself.
+
+In C++, stack-like operations were instead added (as member functions) to the existing standard library container classes that support efficient insertion and removal of elements at one end (`std::vector`, `std::queue` and `std::list`). This allows you to use these containers as stacks, without the need to implement a separate stack data structure.
+
+In the following, we will nalyze how the stack interface of `std::vector` works, and how can be useful to solve the challange we discussed at the begining of this section.
+
+#### Stack behavior with `std::vector`:
+Stack behavior with `std::vector` is implemented with the following member functions:
+
+| Function Name | Stack Operation | Behavior | Notes |
+| `push_back` | Push | Add an element to the top of the stack | Adds the element to the end of vector |
+| `pop_back`  | Pop  | Remove the top element from the stack | Returns void, removes the last element from the vector |
+| `back`  | Top or Peek | Return the top element of the stack | Does not remove the element |
+| `emplace_back` | Push | Add an element to the top of the stack | Alternative to `push_back` that constructs the element in place (could be more efficient) |
+
+Let's have a look at an example:
+```cpp
+#include <iostream>
+#include <vector>
+
+void printStack(const std::vector<int>& stack)
+{
+	if (stack.empty()) // if stack.size == 0
+		std::cout << "Empty";
+
+	for (auto element : stack)
+		std::cout << element << ' ';
+
+	// \t is a tab character, to help align the text
+	std::cout << "\tCapacity: " << stack.capacity() << "  Length " << stack.size() << "\n";
+}
+
+int main()
+{
+	std::vector<int> stack{}; // empty stack
+
+	printStack(stack);
+
+	stack.push_back(1); // push_back() pushes an element on the stack
+	printStack(stack);
+
+	stack.push_back(2);
+	printStack(stack);
+
+	stack.push_back(3);
+	printStack(stack);
+
+	std::cout << "Top: " << stack.back() << '\n'; // back() returns the last element
+
+	stack.pop_back(); // pop_back() pops an element off the stack
+	printStack(stack);
+
+	stack.pop_back();
+	printStack(stack);
+
+	stack.pop_back();
+	printStack(stack);
+
+	return 0;
+}
+```
+On GCC or Clang this will print:
+```
+Empty   Capacity: 0  Length: 0
+1       Capacity: 1  Length: 1
+1 2     Capacity: 2  Length: 2
+1 2 3   Capacity: 4  Length: 3
+Top:3
+1 2     Capacity: 4  Length: 2
+1       Capacity: 4  Length: 1
+Empty   Capacity: 4  Length: 0
+```
+As you can see, `push_back()` (and `emplace_back()`) will increment the length of the vector, and will increase the capacity when needed. In this example, the vector gets reallocated 3 times, with a capacity of 1, 2 and 4.
+
+#### Extra capacity from pushing:
+In the example above, notice how the capacity of the vector is 4 after the third push, even though we only pushed 3 elements. When pushing triggers a reallocation, `std::vector` will typically allocate some extra capacity to allow additional elements to be added without triggering another reallocation (since this is an expensive operation).
+
+How much exta capacity is left up to the compiler's implementation of `std::vector`, and it is not specified by the standard. Different compiler will typically do two things:
+- GCC and Clang doubles the current capacity (e.g., when the last resize is triggered, it will be 2 * 2 = 4)
+- Visual Studio 2022 mutiplies the current capacity by 1.5 (when the last resize is triggered, it will be 2 * 1.5 = 3)
+
+#### Resizing a vector does not work with stack behavior:
+Reallocating a vector is computationally expensive (proportional to the length of the vector), so we want to avoid reallocations when reasonable to do so. In the example above, we could avoid the vector being reallocated 3 times if we manually resized the vector to capacity 3 at the start of the program.
+
+Let's have a look at what happens if we change line 18 to the following:
+```cpp
+std::vector<int> stack(3); // parenthesis init to set vector's capacity to 3
+```
+
+Now, the output will be:
+```
+0 0 0 	Capacity: 3  Length 3
+0 0 0 1 	Capacity: 6  Length 4
+0 0 0 1 2 	Capacity: 6  Length 5
+0 0 0 1 2 3 	Capacity: 6  Length 6
+Top: 3
+0 0 0 1 2 	Capacity: 6  Length 5
+0 0 0 1 	Capacity: 6  Length 4
+0 0 0 	Capacity: 6  Length 3
+```
+This is clearly not right! The issue here is that we are using the parenthesis initialization to set the capacity of the vector, but this will initialize all the elements to 0, and the length of the vector will be 3 at the beginning.
+
+What we really want is a way to chnage the capacity (to avoid future allocations) without changing the length (which has the side effect of adding new elements ot our stack).
+
+#### The `reserve()` member function changes the capacity (but not the length):
+The `reserve()` member function can be used to reallocate a `std::vector` without changing the length of the vector. 
+
+Here is the same example as before, but using `reserve()` instead of parenthesis initialization:
+```cpp
+#include <iostream>
+#include <vector>
+
+void printStack(const std::vector<int>& stack)
+{
+	if (stack.empty()) // if stack.size == 0
+		std::cout << "Empty";
+
+	for (auto element : stack)
+		std::cout << element << ' ';
+
+	// \t is a tab character, to help align the text
+	std::cout << "\tCapacity: " << stack.capacity() << "  Length " << stack.size() << "\n";
+}
+
+int main()
+{
+	std::vector<int> stack{};
+
+	printStack(stack);
+
+	stack.reserve(6); // reserve space for 6 elements (but do not change length)
+	printStack(stack);
+
+	stack.push_back(1);
+	printStack(stack);
+
+	stack.push_back(2);
+	printStack(stack);
+
+	stack.push_back(3);
+	printStack(stack);
+
+	std::cout << "Top: " << stack.back() << '\n';
+
+	stack.pop_back();
+	printStack(stack);
+
+	stack.pop_back();
+	printStack(stack);
+
+	stack.pop_back();
+	printStack(stack);
+
+	return 0;
+}
+```
+This could print something like:
+```
+Empty   Capacity: 0  Length: 0
+Empty   Capacity: 6  Length: 0
+1       Capacity: 6  Length: 1
+1 2     Capacity: 6  Length: 2
+1 2 3   Capacity: 6  Length: 3
+Top: 3
+1 2     Capacity: 6  Length: 2
+1       Capacity: 6  Length: 1
+Empty   Capacity: 6  Length: 0
+```
+You can notice that the capacity is 6, but the length is still 0, meaning that the vector was not initialized with any elements. In this way, no reallocation is triggered when we push the first element, leading to a more efficient implementation.
+
+> **Note:** The `resize()` memebr function changes the length of the vector, and the capacity if necessary.
+> The `reserve()` member function only changes the capacity of the vector (if necessary), and not the length.
+
+#### `push_back()` vs `emplace_back()`:
+Both `push_back()` and `emplace_back()` add an element on top of the stack. If the object to be pushed already exists, both member functions are equivalent, and `push_back()` should be preferred for its simplicity.
+
+If the object to be pushed does not already exist (e.g., temporary object of the same type as the vector's element that we want to push) `emplace_back()` should be preferred, as it will construct the object in place, and it is generally more efficient:
+```cpp
+#include <iostream>
+#include <string>
+#include <string_view>
+#include <vector>
+
+class Foo
+{
+private:
+    std::string m_a{};
+    int m_b{};
+
+public:
+    Foo(std::string_view a, int b)
+        : m_a { a }, m_b { b }
+        {}
+
+    explicit Foo(int b)
+        : m_a {}, m_b { b }
+        {};
+};
+
+int main()
+{
+	std::vector<Foo> stack{};
+
+	// When we already have an object, push_back and emplace_back are similar in efficiency
+	Foo f{ "a", 2 };
+	stack.push_back(f);    // prefer this one
+	stack.emplace_back(f);
+
+	// When we need to create a temporary object to push, emplace_back is more efficient
+	stack.push_back({ "a", 2 }); // creates a temporary object, and then copies it into the vector
+	stack.emplace_back("a", 2);  // forwards the arguments so the object can be created directly in the vector (no copy made)
+
+	// push_back won't use explicit constructors, emplace_back will
+	stack.push_back({ 2 }); // compile error: Foo(int) is explicit
+	stack.emplace_back(2);  // ok
+
+	return 0;
+}
+```
+In this example, we ahve a vector of `Foo` objects, and we want to push a new `Foo` object on top of the stack.
+- With `push_back({ "a", 2 })`: a temporary `Foo` object is created and initialized, which then gets copied into the vector. For expensive-to-copy types, this can be inefficient.
+- With `emplace_back("a", 2)`: the `Foo` object is created in place, directly inside the vector, without any copy or move operations. This function will forward the arguments to the constructor of `Foo`, and it will create the object in place.
+
+> **Best practice:** Prefer `emplace_back()` when creating a new temporary object to add to the container, or when you need to access an explicit constructor of the object.
+
+> **Best practice:** Prefer `push_back()` otherwise.
+
+#### Addressing our challenge using stack operations:
+Finally, we can solve the issue we presented at the beginning (not knowing in advance the number of elements we need to store) using stack operations. If we do not know in advance how many elements will be added to our `std::vector`, we can use stack functions to insert those element one by one.
+
+Here is an example:
+```cpp
+#include <iostream>
+#include <limits>
+#include <vector>
+
+int main()
+{
+	std::vector<int> scoreList{};
+
+	while (true)
+	{
+		std::cout << "Enter a score (or -1 to finish): ";
+		int x{};
+		std::cin >> x;
+
+		if (!std::cin) // handle bad input
+		{
+			std::cin.clear();
+			std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+			continue;
+		}
+
+		// If we're done, break out of loop
+		if (x == -1)
+			break;
+
+		// The user entered a valid element, so let's push it on the vector
+		scoreList.push_back(x);
+	}
+
+	std::cout << "Your list of scores: \n";
+
+	for (const auto& score : scoreList)
+		std::cout << score << ' ';
+
+	return 0;
+}
+```
+This program will keep asking the user to enter a score, and will store it in the `scoreList` vector. The loop will continue until the user enters -1, at which point the program will print the list of scores.
+
+In this way, we are not required to do any counting, indexing, or pre-allocation of memory. We can simply push elements on the stack one by one, and let the `std::vector` handle the memory management for us.
+
+#### Summary
+- `std::vector` supports **stack behavior** via `push_back`, `pop_back`, and `back`.
+- Stack usage is ideal when the number of elements is **unknown at runtime**.
+- `push_back()` grows the vector and increases capacity when needed.
+- Reallocation is expensive; vectors typically grow capacity geometrically.
+- Parenthesis initialization sets **length and capacity**, which breaks stack semantics.
+- `reserve()` increases **capacity only**, preserving correct stack behavior.
+- `resize()` changes the **length** and should not be used for stacks.
+- Prefer `emplace_back()` when constructing new temporary objects in-place.
+- Prefer `push_back()` when the object already exists.
+- Using stack operations avoids manual counting, indexing, and size guessing.
 
 
+---
 
+### S12 - 16.12 `std::vector<bool>`
+In a previous chapter, we covered `std::bitset`, explaining how this has the capability to compact 8 boolean values into a byte. These bits can then be modified via te member functions of `std::bitset`.
 
+`std::vector` has an interesting trick: it can compact boolean values into a byte, just like `std::bitset`, and it may also be more efficient than `std::bitset`.
 
+Unlike `std::bitset`, which was designed for bit manipulation, `std::vector<bool>` lacks but manipullation member functions.
 
+#### Using `std::vector<bool>`:
+For the most part, `std::vector<bool>` works just like a normal `std::vector`:
+```cpp
+#include <iostream>
+#include <vector>
 
+int main()
+{
+    std::vector<bool> v { true, false, false, true, true };
 
+    for (int i : v)
+        std::cout << i << ' ';
+    std::cout << '\n';
 
+    // Change the Boolean value with index 4 to false
+    v[4] = false;
 
+    for (int i : v)
+        std::cout << i << ' ';
+    std::cout << '\n';
 
+    return 0;
+}
+```
+On a 64-bit machine, this will print:
+```
+1 0 0 1 1
+1 0 0 0 1
+```
+In this example, we have a `std::vector<bool>` with 5 boolean values. The output shows that the boolean values are stored in a compact form, with each boolean value occupying a single bit.
 
+#### `std::vector<bool>` tradeoffs:
+However, `std::vector<bool>` has a few tradeoffs:
+- It has a fairly high amount of overhead (`sizeof(std::vector<bool>)` is 40 bytes on a 64-bit machine).
+- Its performance is highly dependent upon the implementation, and so it is not stable.
+- Most importantly, `std::vector<bool>` is not a vector (it is not required to be contiguous in memory), nor does it hold `bool` values (it holds a collection of bits), nor does it meet C++'s definition of a container.
 
+Said that, `std::vector<bool>` is not fully compatible with other standard library containers. For example, this code works when `T` is any type except `bool`:
+```cpp
+template<typename T>
+void foo( std::vector<T>& v )
+{
+    T& first = v[0]; // get a reference to the first element
+    // Do something with first
+}
+```
 
+#### Avoid using `std::vector<bool>`:
+The modern consensus is to avoid using `std::vector<bool>`, as the performance gains are unlikely to be worth the incompatibility headaches due to it not being a proper container.
 
+Our recommendation is as follows:
+- Use (constexpr) `std::bitset` when the number of bits you need is known at compile time, you have a moderate number of bits to store, and the limited set of operators and member function meets your requirements.
+- Prefer `std::vector<char>` when you need a resizable container of boolean values and space-saving is not necessary. This type behaves like a normal container.
+- Favor 3rd party implementation of a dynamic bitset (e.g., `boost::dynamic_bitset`) when you need a resizable container of boolean values and space-saving is necessary.
 
+> **Best practice:** Avoid using `std::vector<bool>`, as the performance gains are unlikely to be worth the incompatibility headaches due to it not being a proper container.
 
-
-
-
-
-
-
-
-
-
-
-
-
+#### Summary:
+- `std::vector<bool>` is a compact container of boolean values, but it is not a proper container.
+- Use (constexpr) `std::bitset` when the number of bits you need is known at compile time, you have a moderate number of bits to store, and the limited set of operators and member function meets your requirements.
+- Prefer `std::vector<char>` when you need a resizable container of boolean values and space-saving is not necessary. This type behaves like a normal container.
+- Favor 3rd party implementation of a dynamic bitset (e.g., `boost::dynamic_bitset`) when you need a resizable container of boolean values and space-saving is necessary.
 
 
 ---
@@ -1609,7 +2822,99 @@ PS: solutions are inside `exercises/sx-questions` folder. Enjoy :)
 
 ## 🧭 Summary
 
+In this chapter you moved from individual variables to **containers**: types that hold collections of elements (typically all of the same type) and let you work with them efficiently. You saw how **arrays** (especially `std::vector`) store elements contiguously in memory, enabling fast random access via the subscript operator `[]`, but also how this comes with no bounds checking by default.
+
+You learned how container **size** is represented (`size()`, `std::size`, `std::ssize`, and the nested `size_type`), how to **pass vectors safely** (by `const&`), and how **copy vs move semantics** affect performance when returning or assigning containers. You also explored different ways to **traverse** containers (classic `for` loops vs range-based `for`) and how enums can make indices more readable and safer.
+
+Finally, you dug into what makes `std::vector` a **dynamic array**: resizing, capacity, reallocation, `push_back` vs `emplace_back`, stack‑style LIFO usage, and why `std::vector<bool>` is a weird, special-case optimization that’s usually better avoided.
 
 ### 🧱 Core Concepts You Mastered:
+
+- **Containers & arrays**
+  - Containers hold collections of unnamed elements, usually of the same type.
+  - Arrays are contiguous in memory and allow **random access**: `arr[i]` is O(1).
+
+- **Size, length, and `size_type`**
+  - Container length is often called **size**; get it via `v.size()` or `std::size(v)`.
+  - Each container exposes a nested `size_type`, usually an alias of `std::size_t`:
+    ```cpp
+    std::vector<int>::size_type n = v.size();
+    ```
+  - `std::ssize(v)` (C++20) returns a signed length (typically `std::ptrdiff_t`).
+
+- **`std::vector` basics & initialization**
+  - `std::vector<T>` is a dynamic array class template defined in `<vector>`.
+  - List vs direct initialization:
+    ```cpp
+    std::vector<int> v1{ 5 }; // one element: {5}
+    std::vector<int> v2(5);   // five elements: {0,0,0,0,0}
+    ```
+
+- **Indexing: `operator[]` vs `.at()`**
+  - `v[i]` is **fast but unchecked** (UB if `i` is out of range).
+  - `v.at(i)` does **runtime bounds checking** and throws `std::out_of_range` on error.
+  - Indices are expected to be of type `size_type` (unsigned), so be careful with signed/unsigned conversions.
+
+- **Passing vectors to functions**
+  - Passing by value copies all elements (expensive).
+  - Prefer passing by (const) reference:
+    ```cpp
+    void print(const std::vector<int>& v);
+    ```
+  - Use function templates to accept vectors with any element type:
+    ```cpp
+    template <typename T>
+    void print(const std::vector<T>& v);
+    ```
+
+- **Copy vs move semantics for containers**
+  - **Copy semantics**: data is duplicated when copying a container.
+  - **Move semantics**: ownership of internal storage is transferred when moving from an rvalue.
+  - Returning a `std::vector` by value is efficient because the implementation will use move (or elide the copy) when possible:
+    ```cpp
+    std::vector<int> makeVec() { return {1, 2, 3}; }
+    ```
+
+- **Traversal & range-based `for`**
+  - Traversal = visiting each element in some order (iteration).
+  - Range-based for keeps code cleaner and avoids index bugs:
+    ```cpp
+    for (const auto& x : v) {
+        std::cout << x << ' ';
+    }
+    ```
+  - Use `const auto&` by default to avoid unnecessary copies unless you need to modify elements or take ownership.
+
+- **Enums as indices**
+  - Unscoped enums can document the meaning of indices:
+    ```cpp
+    enum FruitIndex { apple, banana, cherry, count };
+    std::array<int, count> stock{ 10, 20, 30 };
+    ```
+  - The extra `count` enumerator conveniently encodes the array length.
+
+- **Fixed-size vs dynamic arrays**
+  - Fixed-size arrays: length chosen at instantiation, cannot change.
+  - `std::vector` is a **dynamic array**: it can grow or shrink with `resize()` and stack-style operations.
+
+- **Capacity, `resize`, `reserve`, `push_back`, `emplace_back`**
+  - `size()` = how many elements are in use; `capacity()` = how many elements can fit before reallocation.
+  - `resize(n)` changes the **size** (and capacity if needed).
+  - `reserve(n)` changes only **capacity**, not size; good when you’ll `push_back` many elements.
+  - `push_back(x)` appends an existing object.
+  - `emplace_back(args...)` constructs the element in place and can avoid a temporary:
+    ```cpp
+    v.emplace_back(1, 2.0); // calls T{1, 2.0} directly inside the vector
+    ```
+
+- **Stack / LIFO behavior with `std::vector`**
+  - Using `push_back` and `pop_back`, a vector behaves like a **stack** (LIFO).
+  - Good mental model: “plate stack” – last item pushed is the first popped.
+
+- **The `std::vector<bool>` trap**
+  - `std::vector<bool>` is a space-optimized specialization that stores bits, not real `bool`s.
+  - It’s not required to be contiguous like other vectors and doesn’t behave like a normal container in all cases.
+  - Because of its quirks and incompatibilities, it’s usually better to avoid it (e.g., use `std::vector<char>` or `std::vector<uint8_t>` instead).
+
 
 
